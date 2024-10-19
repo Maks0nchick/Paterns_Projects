@@ -5,17 +5,17 @@
 class Student
   # Определяем геттеры и сеттеры для каждого поля
   attr_accessor :id, :last_name, :first_name, :middle_name, :phone, :telegram, :email, :github
-
-  def initialize(id, last_name, first_name, middle_name = nil, phone = nil, telegram = nil, email = nil, github = nil)
-    self.id = id
-    self.last_name = last_name
-    self.first_name = first_name
-    self.middle_name = middle_name
-    self.phone = phone
-    self.telegram = telegram
-    self.email = email
-    self.github = github
-  end
+  
+    def initialize(attributes = {})
+      @id = attributes[:id]
+      @last_name = attributes[:last_name]
+      @first_name = attributes[:first_name]
+      @middle_name = attributes[:middle_name]
+      @phone = attributes[:phone]
+      @telegram = attributes[:telegram]
+      @email = attributes[:email]
+      @github = attributes[:github]
+    end
 
   # Метод для красивого вывода информации об объекте
   def to_s
