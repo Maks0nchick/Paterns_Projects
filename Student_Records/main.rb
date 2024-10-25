@@ -23,6 +23,8 @@ person = Person.new(
 person1 = Person.new(id: 1, last_name: "Иванов", first_name: "Иван", middle_name: "Иванович", phone: "+7-918-999-69-96", telegram: "@ivanov", email: "ivanov@mail.com", github: "github.com/ivanov")
 puts person1.to_s
 
+person.set_contacts(phone: "+7-918-999-69-97", telegram: "@ivanov2")
+puts person.to_s
 
 begin
   person2 = Person.new(

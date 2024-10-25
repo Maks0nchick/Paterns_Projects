@@ -66,6 +66,12 @@ class Person
     "Человек #{@id}: #{@last_name} #{@first_name} #{@middle_name}, телефон: #{@phone || 'не указан'}, телеграм: #{@telegram || 'не указан'}, email: #{@email || 'не указан'}, github: #{@github || 'не указан'}"
   end
 
+  def set_contacts(phone: nil, telegram: nil, email: nil)
+    @phone = phone if phone.present?
+    @telegram = telegram if telegram.present?
+    @email = email if email.present?
+  end
+
   def validate
     self.class.validate_last_name(@last_name)
     self.class.validate_first_name(@first_name)
