@@ -19,16 +19,52 @@ class Student < Person
 
   def initialize(required_options = {}, optional_options = {})
     super(required_options[:firstname], required_options[:lastname], required_options[:surname], optional_options[:id], optional_options[:git])
-
-    set_phone(optional_options.fetch(:phone, nil))
-    set_telegram(optional_options.fetch(:telegram, nil))
-    set_email(optional_options.fetch(:email, nil))
+    
+    # Устанавливаем контактные данные при создании объекта
+    set_contacts(
+      phone: optional_options.fetch(:phone, nil),
+      telegram: optional_options.fetch(:telegram, nil),
+      email: optional_options.fetch(:email, nil)
+    )
   end
 
   # Валидация для телефонного номера
   def self.valid_phone_number?(phone)
     phone_regex = /^\+?\d{10,15}$/
     phone =~ phone_regex
+  end
+
+  # Валидация для Telegram
+  def self.valid_telegram?(telegram)
+    telegram_regex = /^@[\w\d_]{5,}$/
+    telegram =~ telegram_regex
+  end
+
+  # Валидация для email
+  def self.valid_email?(email)
+    email_regex = /^[\w.+-]+@[\w-]+\.[\w.-]+$/
+    email =~ email_regex
+  end
+
+  # Метод для установки значений полей контактов
+  def set_contacts(options = {})
+    # Устанавливаем номер телефона с проверкой
+    if options.key?(:phone)
+      set_phone(options[:phone])
+    end
+
+    # Устанавливаем Telegram с проверкой
+    if options.key?(:telegram)
+      set_telegram(options[:telegram])
+    end
+
+    # Устанавливаем email с проверкой
+    if options.key?(:email)
+      set_email(options[:email])
+    end
+
+    # Проверяем наличие хотя бы одного контакта после установки
+    validate_contact
   end
 
   # Установка номера телефона с проверкой
@@ -38,23 +74,11 @@ class Student < Person
     @phone = phone
   end
 
-  # Валидация для Telegram
-  def self.valid_telegram?(telegram)
-    telegram_regex = /^@[\w\d_]{5,}$/
-    telegram =~ telegram_regex
-  end
-
   # Установка Telegram с проверкой
   def set_telegram(telegram)
     raise ArgumentError, "Некорректный Telegram: #{telegram}" unless self.class.valid_telegram?(telegram)
 
     @telegram = telegram
-  end
-
-  # Валидация для email
-  def self.valid_email?(email)
-    email_regex = /^[\w.+-]+@[\w-]+\.[\w.-]+$/
-    email =~ email_regex
   end
 
   # Установка email с проверкой
