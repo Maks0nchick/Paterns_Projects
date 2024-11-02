@@ -1,4 +1,5 @@
 class Student
+  attr_accessor :id, :lastname, :firstname, :surname, :phone, :telegram, :email, :git
 
   # Конструктор класса
   def initialize(firstname, lastname, surname, id = nil, phone = nil, telegram = nil, email = nil, git = nil)
@@ -12,69 +13,17 @@ class Student
     @git = git
   end
 
-  # Геттеры получить
-  def get_id
-    @id
-  end
-
-  def get_surname
-    @surname
-  end
-
-  def get_firstname
-    @firstname
-  end
-
-  def get_lastname
-    @lastname
-  end
-
-  def get_phone
-    @phone
-  end
-
-  def get_telegram
-    @telegram
-  end
-
-  def get_email
-    @email
-  end
-
-  def get_git
-    @git
-  end
-
-  # Сеттеры задать
-  def set_id(id)
-    @id = id
-  end
-
-  def set_surname(surname)
-    @surname = surname
-  end
-
-  def set_firstname(name)
-    @firstname = firstname
-  end
-
-  def set_lastname(lastname)
-    @lastname = lastname
-  end
-
-  def set_phone(phone)
-    @phone = phone
-  end
-
-  def set_telegram(telegram)
-    @telegram = telegram
-  end
-
-  def set_email(email)
-    @email = email
-  end
-
-  def set_git(git)
-    @git = git
+  # Метод для форматированного вывода информации об объекте
+  def to_s
+    info = "Информация о студенте:\n"
+    info += "ID: #{@id}\n" if @id
+    info += "Фамилия: #{@lastname}\n"
+    info += "Имя: #{@firstname}\n"
+    info += "Отчество: #{@surname}\n"
+    info += "Телефон: #{@phone}\n" if @phone
+    info += "Telegram: #{@telegram}\n" if @telegram
+    info += "Почта: #{@email}\n" if @email
+    info += "Git: #{@git}\n" if @git
+    info
   end
 end
