@@ -1,3 +1,19 @@
+class Person
+  attr_accessor :firstname, :lastname, :surname, :id, :git
+
+  def initialize(firstname, lastname, surname, id = nil, git = nil)
+    @firstname = firstname
+    @lastname = lastname
+    @surname = surname
+    @id = id
+    @git = git
+  end
+
+  def to_s
+    "ФИО: #{@lastname} #{@firstname} #{@surname}\nID: #{@id}\nGit: #{@git}"
+  end
+end
+
 class Student < Person
   attr_accessor :phone, :telegram, :email
 
@@ -46,6 +62,26 @@ class Student < Person
     raise ArgumentError, "Некорректный email: #{email}" unless self.class.valid_email?(email)
 
     @email = email
+  end
+
+  # Валидация наличия Git и хотя бы одного контакта
+  def validate
+    validate_git
+    validate_contact
+  end
+
+  private
+
+  # Метод для валидации наличия Git
+  def validate_git
+    raise ArgumentError, "Git не может быть пустым." if @git.nil? || @git.empty?
+  end
+
+  # Метод для валидации наличия хотя бы одного контакта
+  def validate_contact
+    if @phone.nil? && @telegram.nil? && @email.nil?
+      raise ArgumentError, "Необходимо указать хотя бы один контакт: телефон, Telegram или email."
+    end
   end
 
   # Метод для форматированного вывода информации об объекте

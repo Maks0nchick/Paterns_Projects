@@ -1,25 +1,16 @@
-require_relative 'student'
-require_relative 'person'
-
 begin
-  # Создание объектов Person
-  person1 = Person.new("Иван", "Иванов", "Иванович", "001", "ivanov_git")
-  puts person1
-  puts "------------------"
+  # Создание студента с корректными данными
+  student1 = Student.new({ firstname: "Алексей", lastname: "Алексеев", surname: "Алексеевич" }, { id: "001", git: "alexey_git", phone: "+79061234567", email: "alexey@example.com" })
 
-  # Создание объектов студентов с правильными номерами телефонов
-  student1 = Student.new({ firstname: "Петр", lastname: "Петров", surname: "Петрович" }, { id: "002", phone: "+79161234567", email: "petr@example.com", git: "petrov_git" })
-  
-  student2 = Student.new({ firstname: "Семен", lastname: "Сидоров", surname: "Семенович" }, { id: "003", phone: "+79991234567", telegram: "@sidorov" })
+  # Валидация
+  student1.validate
 
-  # Вывод информации о студентах
   puts student1
-  puts "------------------"
-  puts student2
-  puts "------------------"
 
-  # Пример создания с некорректным номером телефона, выбросит ошибку
-  student_invalid = Student.new({ firstname: "Алексей", lastname: "Алексеев", surname: "Алексеевич" }, { id: "004", phone: "12345" }) # Некорректный номер
+  # Создание студента с некорректными данными
+  student_invalid = Student.new({ firstname: "Семен", lastname: "Сидоров", surname: "Семенович" }, { id: "002", git: "sidorov_git", phone: "12345" }) # Некорректный номер
+
+  student_invalid.validate # Это вызовет ошибку валидации телефонного номера
 rescue ArgumentError => e
-  puts "Ошибка создания студента: #{e.message}"
+  puts "Ошибка: #{e.message}"
 end
