@@ -1,16 +1,16 @@
 class Student
   attr_accessor :id, :lastname, :firstname, :surname, :phone, :telegram, :email, :git
 
-  # Конструктор класса
-  def initialize(firstname, lastname, surname, id = nil, phone = nil, telegram = nil, email = nil, git = nil)
-    @lastname = lastname
-    @firstname = firstname
-    @surname = surname
-    @id = id
-    @phone = phone
-    @telegram = telegram
-    @email = email
-    @git = git
+  # Конструктор класса, принимающий параметры через хеш options
+  def initialize(**options)
+    @firstname = options[:firstname]
+    @lastname = options[:lastname]
+    @surname = options[:surname]
+    @id = options[:id]
+    @phone = options[:phone]
+    @telegram = options[:telegram]
+    @email = options[:email]
+    @git = options[:git]
   end
 
   # Метод для форматированного вывода информации об объекте

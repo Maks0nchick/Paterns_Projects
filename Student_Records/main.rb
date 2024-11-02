@@ -1,9 +1,9 @@
 require_relative 'student'
 
 # Создание объектов студентов
-student1 = Student.new("Иван", "Иванов", "Иванович", "001", "+79991234567", "ivan_ivanov", "ivan@example.com", "https://github.com/ivan")
-student2 = Student.new("Петр", "Петров", "Петрович", "002", nil, "@petrov", "petr@example.com")
-student3 = Student.new("Семен", "Сидоров", "Семенович")
+student1 = Student.new(firstname: "Иван", lastname: "Иванов", surname: "Иванович", id: "001", phone: "+79991234567", telegram: "ivan_ivanov", email: "ivan@example.com", git: "https://github.com/ivan")
+student2 = Student.new(firstname: "Петр", lastname: "Петров", surname: "Петрович", id: "002", telegram: "@petrov", email: "petr@example.com")
+student3 = Student.new(firstname: "Семен", lastname: "Сидоров", surname: "Семенович")
 
 # Вывод информации о студентах
 puts student1
