@@ -1,10 +1,11 @@
 # main.rb
+
 require_relative 'student'
 
-# Создание объектов класса Student
-student1 = Student.new(1, "Иванов", "Иван", "Иванович", "1234567890", "@ivanov", "ivanov@mail.com", "github.com/ivanov")
-student2 = Student.new(2, "Петров", "Петр", "Петрович", "2345678901", "@petrov", "petrov@mail.com", "github.com/petrov")
-student3 = Student.new(3, "Сидоров", "Сидор", "Сидорович", "3456789012", "@sidorov", "sidorov@mail.com", "github.com/sidorov")
+# Создание объектов класса Student с разными комбинациями полей
+student1 = Student.new(id: 1, last_name: "Иванов", first_name: "Иван", middle_name: "Иванович", phone: "1234567890", telegram: "@ivanov", email: "ivanov@mail.com", github: "github.com/ivanov")
+student2 = Student.new(id: 2, last_name: "Петров", first_name: "Петр", middle_name: "Петрович", phone: "0987654321")
+student3 = Student.new(id: 3, last_name: "Сидоров", first_name: "Сидор", middle_name: "Сидорович", email: "sidorov@mail.com")
 
 # Вывод информации о каждом студенте
 puts "Информация о студентах:"
