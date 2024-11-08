@@ -17,5 +17,14 @@ class Student
     @github = github
     @email = email
   end
+  # Метод to_s для корректного вывода информации
+  def to_s
+    info = "ID: #{@id}\nФИО: #{@last_name} #{@first_name} #{@middle_name}\n"
+    info += "Телефон: #{@phone || 'не указан'}\n"
+    info += "Телеграм: #{@telegram || 'не указан'}\n"
+    info += "Почта: #{@email || 'не указана'}\n"
+    info += "GitHub: #{@github || 'не указан'}"
+    info
+  end
 end
   
