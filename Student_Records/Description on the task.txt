@@ -59,4 +59,56 @@ class Student
 end
 ---
 require_relative — это метод, который позволяет загрузить и использовать код из другого файла, расположенного относительно текущего файла. В данном случае, student.rb находится в той же директории, что и main.rb, и именно поэтому используется require_relative.
+---
+Задание №3-4
+---
+Выяснил:
+---
+1. Когда мы используем attr_reader, attr_writer, или attr_accessor, Ruby автоматически генерирует геттеры и сеттеры для указанных атрибутов, и эти методы не дублируют код:
+attr_reader :name
+def name
+  @name
+end
+
+attr_writer :name
+def name=(value)
+  @name = value
+end
+
+attr_accessor :name
+def name
+  @name
+end
+
+def name=(value)
+  @name = value
+end
+---
+2. Без использования attr_accessor/attr_reader/attr_writer:
+class Student
+  def initialize(id, name)
+    @id = id
+    @name = name
+  end
+
+  def id
+    @id
+  end
+
+  def id=(value)
+    @id = value
+  end
+
+  def name
+    @name
+  end
+
+  def name=(value)
+    @name = value
+  end
+end
+Тут прописываем геттеры и сеттеры для каждого атрибута, что дублирует код.
+---
+С помощью attr_accessor конструктор остаётся простым, с минимальным количеством строк кода. Мы явно инициализируем только необходимые атрибуты.
+так же можно добавлять или удалять атрибуты в массиве или в конструкторе без необходимости изменять логику геттеров/сеттеров вручную.
 
