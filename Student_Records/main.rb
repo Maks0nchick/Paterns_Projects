@@ -1,16 +1,27 @@
 # main.rb
 
-require_relative 'student'
+require_relative 'student'  # Подключаем файл student.rb, где находится класс Person
 
-# Создание объектов класса Student с передачей параметров через хэш
-student1 = Student.new({ id: 1, last_name: "Иванов", first_name: "Иван", middle_name: "Иванович", phone: "1234567890", telegram: "@ivanov", email: "ivanov@mail.com", github: "github.com/ivanov" })
-student2 = Student.new({ id: 2, last_name: "Петров", first_name: "Петр", middle_name: "Петрович", phone: "0987654321" })
-student3 = Student.new({ id: 3, last_name: "Сидоров", first_name: "Сидор", middle_name: "Сидорович", email: "sidorov@mail.com" })
+begin
+  # Создаем объект с заполненными всеми полями
+  student1 = Person.new(middle_name: "Иванов", first_name: "Иван", last_name: "Иванович", id: 1, github: "github.com/ivanov", phone: "+1234567890")
+  puts student1  # Вывод всей информации о студенте
+rescue => e
+  puts e.message
+end
 
-# Вывод информации о каждом студенте
-puts "Информация о студентах:"
-puts student1
-puts "-" * 30
-puts student2
-puts "-" * 30
-puts student3
+begin
+  # Создаем объект, указывая только обязательные поля
+  student2 = Person.new(middle_name: "Петров", first_name: "Петр", last_name: "Петрович")
+  puts student2  # Поля id, github, и phone будут отображены как 'не указан'
+rescue => e
+  puts e.message
+end
+
+begin
+  # Создаем объект с частью необязательных полей
+  student3 = Person.new(middle_name: "Сидоров", first_name: "Сидор", last_name: "Сидорович", phone: "1234567890")
+  puts student3  # Поля id и github будут отображены как 'не указан'
+rescue => e
+  puts e.message
+end
