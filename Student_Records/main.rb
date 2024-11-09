@@ -1,18 +1,15 @@
 # main.rb
 require_relative 'student'
-
 begin
-  # Создаём объект с корректным номером телефона
-  person1 = Person.new(middle_name: "Иванович", first_name: "Иван", last_name: "Иванов", github: "github.com/ivanov", phone: "+12345678901")
-  puts person1  # => ID: не указан, ФИО: Иванович Иван Иванов, GitHub: github.com/ivanov, Контакт: +12345678901
+  person = Person.new(middle_name: "Иванович", first_name: "Иван", last_name: "Иванов", github: "https://github.com/ivanov", phone: "+1234567890")
+  puts person.to_s  # Успешно создаст объект с корректными данными
 rescue => e
-  puts e.message  # Если телефон неправильный, отобразится ошибка
+  puts e.message    # Выведет ошибку, если одно из полей не соответствует валидации
 end
 
 begin
-  # Создаём объект с некорректным номером телефона
-  person2 = Person.new(middle_name: "Петрович", first_name: "Петр", last_name: "Петров", github: "github.com/petrov", phone: "12345")
-  puts person2  # Ошибка, номер телефона невалидный
+  person_invalid = Person.new(middle_name: "Иванович", first_name: "Иван", last_name: "Иванов", github: "https://github.com/ivanov!", phone: "+1234567890")
+  puts person_invalid.to_s
 rescue => e
-  puts e.message  # => Недопустимый номер телефона: 12345
+  puts e.message    # Выведет ошибку: "Недопустимая ссылка на GitHub"
 end
