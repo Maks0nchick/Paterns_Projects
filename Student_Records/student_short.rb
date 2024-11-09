@@ -1,44 +1,54 @@
-class StudentShort
-  attr_reader :id, :surname_initials, :git, :contact
+require_relative 'person.rb'
+
+class Student_Short < Person
+  attr_reader :surname_initials, :git, :contact
+
+  # Конструктор, который принимает строку имени и другие параметры
+  def initialize(id:, name:, git:, contact:)
+    # Разделяем имя на фамилию, имя и отчество
+    surname, initials = name.split(" ", 2)
+    firstname, lastname = initials.split('.', 2).map(&:capitalize)
+
+    # Проверка наличия id
+    raise ArgumentError, "Отсутствует id студента: #{surname} #{firstname}.#{lastname}." if id.nil?
+
+    # Передаем в конструктор суперкласса
+    super(surname: surname, firstname: firstname, lastname: lastname, id: id, git: git, contact: contact)
+  end
+
   private_class_method :new
 
-  # Основной конструктор
-  def initialize(id:, surname_initials:, git:, contact:)
-    @id = id
-    @surname_initials = surname_initials
-    @git = git
-    @contact = contact
-    validate_presence_of_git_and_contact # Проверка, что git и контакт не пустые
+  # Метод для создания экземпляра из строки
+  def self.create_from_string(id:, data:)
+    # Используем метод parse_string_params для разбиения строки
+    params = self.parse_string_params(data)
+    
+    # Обрабатываем параметры
+    name = params[0..1].join(' ')  # Фамилия и инициалы
+    git = params[2]                # Git
+    contact = params[3..].join(' ')  # Контактная информация
+
+    # Создаем новый объект
+    self.new(id: id, name: name, git: git, contact: contact)
   end
 
-  # Создание объекта из другого объекта (например, Student)
-  def self.from_student(student)
-    new(id: student.id, surname_initials: student.initials, git: student.git, contact: student.contact)
+  # Создание объекта на основе существующего студента
+  def self.create_from_student(student_obj)
+    name = student_obj.get_name
+    git = student_obj.git
+    contact = student_obj.contact
+
+    self.new(id: student_obj.id, name: name, git: git, contact: contact)
   end
 
-  # Создание объекта из строки
-  def self.from_string(id, info_string)
-    info = info_string.split(", ")
-    surname_initials = info[0]
-    git = info[1]
-    contact = info[2]
-    new(id: id, surname_initials: surname_initials, git: git, contact: contact)
+  # Метод для парсинга строки данных
+  def self.parse_string_params(str_params)
+    # Разделяем строку на части по пробелам
+    str_params.split
   end
 
-  # Метод для получения краткой информации о студенте
-  def get_info
-    "#{surname_initials}; Git: #{git}; Контакт: #{contact}"
-  end
-
-  # Метод для форматированного вывода всей информации
+  # Метод для вывода информации о студенте
   def to_s
-    "ID: #{id}, Фамилия И.О.: #{surname_initials}, Git: #{git}, Контактная информация: #{contact}"
-  end
-
-  private
-
-  # Метод для проверки обязательных полей (git и contact)
-  def validate_presence_of_git_and_contact
-    raise ArgumentError, 'Git и контактная информация обязательны' if git.nil? || git.empty? || contact.nil? || contact.empty?
+    "#{@id} #{self.get_name} #{@git} #{@contact}"
   end
 end

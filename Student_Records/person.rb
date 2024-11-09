@@ -1,44 +1,48 @@
 # person.rb
-
 class Person
-  attr_reader :surname, :firstname, :lastname, :github, :phone, :telegram, :email
+  attr_reader :id, :git, :contact
 
-  def initialize(surname:, firstname:, lastname:, id: nil, github: nil, phone: nil, telegram: nil, email: nil)
-    @surname = surname
-    @firstname = firstname
-    @lastname = lastname
+  def initialize(id:, git: nil, contact: nil)
     @id = id
-    @github = github
-    @phone = phone
-    @telegram = telegram
-    @email = email
+    self.git = git
+    self.contact = contact
   end
 
-  # Метод для получения фамилии с инициалами
-  def full_name_with_initials
-    "#{surname} #{firstname[0]}.#{lastname[0]}."
-  end
-
-  # Метод для получения информации о GitHub
-  def github_info
-    github || 'GitHub не указан'
-  end
-
-  # Метод для получения одного из доступных контактов
-  def contact_info
-    if phone
-      "Телефон: #{phone}"
-    elsif telegram
-      "Telegram: #{telegram}"
-    elsif email
-      "Email: #{email}"
+  def git=(git)
+    if git.nil? || self.class.is_git_valid?(git)
+      @git = git
     else
-      "Контакт не указан"
+      raise ArgumentError, "Неверный формат git: #{@git}"
     end
   end
 
-  # Метод getInfo для получения краткой информации о студенте
-  def getInfo
-    "#{full_name_with_initials}; GitHub: #{github_info}; Связь: #{contact_info}"
+  def contact=(contact)
+    contact_data = contact.to_s.split[0]
+    if contact.nil? || self.class.is_valid_contact?(contact_data)
+      @contact = contact_data
+    else
+      raise ArgumentError, "Неверный формат контакта: #{@contact}"
+    end
+  end
+
+  # Валидации
+  def self.is_git_valid?(git)
+    git =~ /^github\.com\/[A-Za-z0-9._-]+\/?$/
+  end
+
+  def self.is_valid_contact?(contact)
+    is_phone_number?(contact) || is_email?(contact) || is_telegram?(contact)
+  end
+
+  def self.is_phone_number?(phone)
+    phone =~ /^\+?\d{1,3}\s?\(?\d{3}\)?\s?\d{3}-?\d{2}-?\d{2}$/
+  end
+
+  def self.is_email?(email)
+    email =~ /^[A-Za-z0-9._-]+@[A-Za-z0-9._-]+mail\.[A-Za-z]+$/
+  end
+
+  def self.is_telegram?(telegram)
+    telegram =~ /^@[A-Za-z0-9_]{4,20}$/
   end
 end
