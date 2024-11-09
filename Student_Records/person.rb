@@ -1,122 +1,51 @@
-class Person
-  # Используем attr_accessor для полей, которые могут быть изменены после создания объекта
-  attr_accessor :id, :github
-  # Используем attr_reader для обязательных полей, доступных только для чтения
-  attr_reader :middle_name, :first_name, :last_name, :phone, :telegram, :email
+# person.rb
 
-  # Конструктор с обязательными именованными параметрами и необязательными параметрами со значениями по умолчанию
+class Person
+  attr_accessor :id, :github
+  attr_reader :middle_name, :first_name, :last_name, :contact
+
   def initialize(middle_name:, first_name:, last_name:, github:, phone: nil, telegram: nil, email: nil)
     self.middle_name = middle_name
     self.first_name = first_name
     self.last_name = last_name
-    self.id = id
     self.github = github
-    self.phone = phone
-    self.telegram = telegram
-    self.email = email
+    self.contact = [phone, telegram, email].compact.join(' ')  # Сначала задаем контакт, если есть
   end
 
-  # Метод класса для проверки допустимости телефонного номера
-  def self.valid_phone?(phone)
-    # Проверяем, что телефон состоит из 10 цифр или начинается с "+" и имеет 11 цифр
-    !!phone.match(/\A(\+?\d{1,3})?\d{10}\z/)
-  end
-
-  # Метод для проверки валидности имени и фамилии
-  def self.valid_name?(name)
-    # Проверяем, что имя или фамилия состоит только из букв и пробела
-    !!name.match(/\A[A-Za-zА-Яа-яЁё\s-]+\z/)
-  end
-
-  # Метод для проверки валидности GitHub
-  def self.valid_github?(github)
-    # Проверяем, что ссылка на GitHub имеет формат https://github.com/username
-    !!github.match(/\Ahttps:\/\/github\.com\/[a-zA-Z0-9_-]+\z/)
-  end
-
-  # Сеттер для middle_name с проверкой валидности
-  def middle_name=(middle_name)
-    if Person.valid_name?(middle_name)
-      @middle_name = middle_name
+  # Метод для установки контакта (телефон, email или telegram)
+  def contact=(contacts_string)
+    # Разделяем строку контакта по пробелам
+    contact = contacts_string.to_s.split[0]
+    
+    # Проверяем, является ли контакт допустимым
+    if contact.nil? || Person.is_phone_number_valid?(contact) || Person.is_email_valid?(contact) || Person.is_telegram_valid?(contact)
+      @contact = contact
     else
-      raise "Недопустимое имя: #{middle_name}"
+      raise ArgumentError.new("Неверный контакт: #{@id} #{@last_name} #{@first_name}")
     end
   end
 
-  # Сеттер для first_name с проверкой валидности
-  def first_name=(first_name)
-    if Person.valid_name?(first_name)
-      @first_name = first_name
-    else
-      raise "Недопустимое имя: #{first_name}"
-    end
+  # Валидация телефонного номера
+  def self.is_phone_number_valid?(checked_phone_number)
+    phone_number_reg = /^\+?\d{1,3}\s?\(?\s*\d{3}\s*\)?\s?\d{3}\-{0,1}\d{2}\-{0,1}\d{2}\s*$/  # Регулярное выражение для телефонного номера
+    !!(checked_phone_number =~ phone_number_reg)  # Возвращаем true, если соответствует формату
   end
 
-  # Сеттер для last_name с проверкой валидности
-  def last_name=(last_name)
-    if Person.valid_name?(last_name)
-      @last_name = last_name
-    else
-      raise "Недопустимая фамилия: #{last_name}"
-    end
+  # Валидация email
+  def self.is_email_valid?(checked_email)
+    email_reg = /\A[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\z/  # Регулярное выражение для email
+    !!(checked_email =~ email_reg)
   end
 
-  # Сеттер для github с проверкой валидности
-  def github=(github)
-    if Person.valid_github?(github)
-      @github = github
-    else
-      raise "Недопустимая ссылка на GitHub: #{github}"
-    end
+  # Валидация Telegram
+  def self.is_telegram_valid?(checked_telegram)
+    telegram_reg = /\A@[A-Za-z0-9_]{5,15}\z/  # Регулярное выражение для Telegram
+    !!(checked_telegram =~ telegram_reg)
   end
 
-  # Сеттер для phone с проверкой валидности
-  def phone=(phone)
-    if Person.valid_phone?(phone)
-      @phone = phone
-    else
-      raise "Недопустимый номер телефона: #{phone}"
-    end
-  end
+  private :contact=  # Закрываем доступ к сеттеру contact из внешнего мира
 
-  # Сеттер для telegram
-  def telegram=(telegram)
-    @telegram = telegram
-  end
-
-  # Сеттер для email
-  def email=(email)
-    @email = email
-  end
-
-  # Метод для проверки наличия GitHub
-  def valid_github?
-    !@github.nil? && !@github.empty?
-  end
-
-  # Метод для проверки наличия хотя бы одного контакта (телефон, телеграм, почта)
-  def valid_contact?
-    !@phone.nil? || !@telegram.nil? || !@email.nil?
-  end
-
-  # Метод для общей валидации
-  def validate
-    unless valid_github?
-      raise "GitHub должен быть указан"
-    end
-
-    unless valid_contact?
-      raise "Необходим хотя бы один контакт для связи (телефон, телеграм, почта)"
-    end
-  end
-
-  # Метод to_s для вывода информации об объекте
   def to_s
-    info = "ID: #{id || 'не указан'}\nФИО: #{middle_name} #{first_name} #{last_name}\n"
-    info += "GitHub: #{github || 'не указан'}\n"
-    info += "Контакт: #{phone || 'не указан'}"
-    info += ", Telegram: #{telegram || 'не указан'}" if telegram
-    info += ", Email: #{email || 'не указан'}" if email
-    info
+    "ID: #{@id}\nName: #{@middle_name} #{@first_name} #{@last_name}\nGitHub: #{@github}\nContacts: #{@contact}"
   end
 end
