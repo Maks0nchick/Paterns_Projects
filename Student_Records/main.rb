@@ -1,27 +1,18 @@
 # main.rb
-
-require_relative 'student'  # Подключаем файл student.rb, где находится класс Person
+require_relative 'student'
 
 begin
-  # Создаем объект с заполненными всеми полями
-  student1 = Person.new(middle_name: "Иванов", first_name: "Иван", last_name: "Иванович", id: 1, github: "github.com/ivanov", phone: "+1234567890")
-  puts student1  # Вывод всей информации о студенте
+  # Создаём объект с корректным номером телефона
+  person1 = Person.new(middle_name: "Иванович", first_name: "Иван", last_name: "Иванов", github: "github.com/ivanov", phone: "+12345678901")
+  puts person1  # => ID: не указан, ФИО: Иванович Иван Иванов, GitHub: github.com/ivanov, Контакт: +12345678901
 rescue => e
-  puts e.message
+  puts e.message  # Если телефон неправильный, отобразится ошибка
 end
 
 begin
-  # Создаем объект, указывая только обязательные поля
-  student2 = Person.new(middle_name: "Петров", first_name: "Петр", last_name: "Петрович")
-  puts student2  # Поля id, github, и phone будут отображены как 'не указан'
+  # Создаём объект с некорректным номером телефона
+  person2 = Person.new(middle_name: "Петрович", first_name: "Петр", last_name: "Петров", github: "github.com/petrov", phone: "12345")
+  puts person2  # Ошибка, номер телефона невалидный
 rescue => e
-  puts e.message
-end
-
-begin
-  # Создаем объект с частью необязательных полей
-  student3 = Person.new(middle_name: "Сидоров", first_name: "Сидор", last_name: "Сидорович", phone: "1234567890")
-  puts student3  # Поля id и github будут отображены как 'не указан'
-rescue => e
-  puts e.message
+  puts e.message  # => Недопустимый номер телефона: 12345
 end
