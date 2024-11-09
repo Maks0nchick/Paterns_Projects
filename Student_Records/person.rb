@@ -2,16 +2,18 @@ class Person
   # Используем attr_accessor для полей, которые могут быть изменены после создания объекта
   attr_accessor :id, :github
   # Используем attr_reader для обязательных полей, доступных только для чтения
-  attr_reader :middle_name, :first_name, :last_name, :phone
+  attr_reader :middle_name, :first_name, :last_name, :phone, :telegram, :email
 
   # Конструктор с обязательными именованными параметрами и необязательными параметрами со значениями по умолчанию
-  def initialize(middle_name:, first_name:, last_name:, github:, phone:)
+  def initialize(middle_name:, first_name:, last_name:, github:, phone: nil, telegram: nil, email: nil)
     self.middle_name = middle_name
     self.first_name = first_name
     self.last_name = last_name
     self.id = id
     self.github = github
-    self.phone = phone  # Используем setter для проверки телефона
+    self.phone = phone
+    self.telegram = telegram
+    self.email = email
   end
 
   # Метод класса для проверки допустимости телефонного номера
@@ -77,11 +79,44 @@ class Person
     end
   end
 
+  # Сеттер для telegram
+  def telegram=(telegram)
+    @telegram = telegram
+  end
+
+  # Сеттер для email
+  def email=(email)
+    @email = email
+  end
+
+  # Метод для проверки наличия GitHub
+  def valid_github?
+    !@github.nil? && !@github.empty?
+  end
+
+  # Метод для проверки наличия хотя бы одного контакта (телефон, телеграм, почта)
+  def valid_contact?
+    !@phone.nil? || !@telegram.nil? || !@email.nil?
+  end
+
+  # Метод для общей валидации
+  def validate
+    unless valid_github?
+      raise "GitHub должен быть указан"
+    end
+
+    unless valid_contact?
+      raise "Необходим хотя бы один контакт для связи (телефон, телеграм, почта)"
+    end
+  end
+
   # Метод to_s для вывода информации об объекте
   def to_s
     info = "ID: #{id || 'не указан'}\nФИО: #{middle_name} #{first_name} #{last_name}\n"
     info += "GitHub: #{github || 'не указан'}\n"
     info += "Контакт: #{phone || 'не указан'}"
+    info += ", Telegram: #{telegram || 'не указан'}" if telegram
+    info += ", Email: #{email || 'не указан'}" if email
     info
   end
 end
