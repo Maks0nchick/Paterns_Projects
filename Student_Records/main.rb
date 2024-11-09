@@ -1,20 +1,9 @@
 # main.rb
+
 require_relative 'person'
-begin
-  person = Person.new(
-    middle_name: "Ivanov", 
-    first_name: "Ivan", 
-    last_name: "Ivanovich", 
-    github: "ivanov-github", 
-    phone: "+79161234567", 
-    telegram: "@ivanov", 
-    email: "ivanov@mail.com"
-  )
 
-  puts person.to_s  # Вывод информации о человеке
+# Создаем объект Person с тестовыми данными
+student = Person.new(surname: "Иванов", firstname: "Иван", lastname: "Иванович", github: "ivanovGit", phone: "+123456789")
 
-  # Попробуем установить некорректный контакт
-  person.contact = "invalid_contact"  # Это вызовет исключение
-rescue ArgumentError => e
-  puts "Ошибка: #{e.message}"  # Обработка ошибки
-end
+# Вывод краткой информации с использованием метода getInfo
+puts student.getInfo
