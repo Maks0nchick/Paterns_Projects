@@ -1,55 +1,96 @@
-# student.rb
-require_relative 'person'
-
 class Student < Person
-  attr_reader :surname, :firstname, :lastname, :phone_number, :telegram, :email
+  attr_reader :telegram, :email, :phone_number
 
-  def initialize(surname:, firstname:, lastname:, id:, git: nil, phone_number: nil, telegram: nil, email: nil)
-    super(id: id, git: git)
-    @surname, @firstname, @lastname = surname, firstname, lastname
-    set_contacts(phone_number: phone_number, telegram: telegram, email: email)
+  def initialize(surname:, firstname:, lastname:, id: nil, phone_number: nil, telegram: nil, email: nil, git: nil)
+    set_contacts(phone_number: phone_number, email: email, telegram: telegram)
+    super(surname: surname, firstname: firstname, lastname: lastname, id: id, git: git, contact: concatenate_contacts)
   end
 
-  # Методы установки контактов
-  def set_contacts(phone_number: nil, telegram: nil, email: nil)
-    self.phone_number = phone_number
-    self.telegram = telegram
-    self.email = email
-    self.contact = format_contact
+  def concatenate_contacts
+    (@phone_number ||= '') + ' ' + (@email ||= '') + ' ' + (@telegram ||= '')
   end
 
-  private
-
-  # Формат контактов
-  def format_contact
-    [@phone_number, @telegram, @email].compact.join(' ')
-  end
-
-  # Валидация номера телефона
   def phone_number=(phone_number)
-    @phone_number = phone_number if phone_number.nil? || self.class.is_phone_number?(phone_number)
+    if phone_number.nil?
+      @phone_number = nil
+    elsif Student.is_phone_number_valid? (phone_number)
+      @phone_number = phone_number.gsub(' ', '')
+    else
+      raise ArgumentError.new("Неверный номер телефона студента: #{@id} #{@surname} #{@firstname} #{@lastname}")
+    end
   end
 
   def email=(email)
-    @email = email if email.nil? || self.class.is_email?(email)
+    if email.nil? or Student.is_email_valid? (email)
+      @email = email 
+    else
+      raise ArgumentError.new("Неверный адрес электронной почты: #{@id} #{@surname} #{@firstname} #{@lastname}")
+    end
   end
 
   def telegram=(telegram)
-    @telegram = telegram if telegram.nil? || self.class.is_telegram?(telegram)
+    if telegram.nil? or Student.is_telegram_valid? (telegram)
+      @telegram = telegram
+    else
+      raise ArgumentError.new("Неверный telegram: #{@id} #{@surname} #{@firstname} #{@lastname}")
+    end
   end
 
-  public
+  private :phone_number=, :email=, :telegram=
 
-  # Методы для вывода информации
-  def full_name
-    "#{@surname} #{@firstname} #{@lastname}"
+  def Student.params_from_string(str)
+    if str.empty? || str.nil?
+      raise ArgumentError.new("Строка параметров пустая")
+    end
+
+    begin
+      student_init = {}
+
+      str.split(';').each do |param|
+        key, value = param.strip.split(':').map(&:strip)
+        case key.downcase
+          when 'surname'
+            student_init[:surname] = value
+          when 'firstname'
+            student_init[:firstname] = value
+          when 'lastname'
+            student_init[:lastname] = value
+          when 'id'
+            student_init[:id] = value
+          when 'phone_number'
+            student_init[:phone_number] = value
+          when 'telegram'
+            student_init[:telegram] = value
+          when 'email'
+            student_init[:email] = value
+          when 'git'
+            student_init[:git] = value
+        end
+      end
+
+      return student_init
+    rescue => error
+      puts error.message
+    end
   end
 
-  def get_info
-    "#{full_name}; Git: #{git}; Контакт: #{contact}"
+  def Student.create_from_string(str)
+    parsed_string = Student.params_from_string(str)
+    self.new(**parsed_string)
+  end
+
+  def set_contacts(hash_contacts)
+    self.phone_number = hash_contacts[:phone_number]
+    self.email = hash_contacts[:email]
+    self.telegram = hash_contacts[:telegram]
+    self.contact = concatenate_contacts
   end
 
   def to_s
-    "ID: #{id}, ФИО: #{full_name}, Git: #{git}, Контакт: #{contact}"
+    "#{@id} #{@surname} #{@firstname} #{@lastname}\nGit: #{@git}\nДанные для связи:\nНомер телефона: #{@phone_number}\nТелеграм: #{@telegram}\nEmail: #{@email}\n\n"
+  end
+
+  def to_str
+    "id: #{@id}; surname: #{@surname}; firstname: #{@firstname}; lastname: #{@lastname}; phone_number: #{@phone_number}; telegram: #{@telegram}; email: #{@email}; git: #{@git}"
   end
 end
