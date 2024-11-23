@@ -29,15 +29,14 @@ class Student
   end
 
   # Конструктор принимает хэш параметров
-  def initialize(args = {})
+  def initialize(args = {id: nil, telegram: nil, github: nil, last_name:, first_name:, middle_name: nil, email: nil, phone: nil})
     self.id = args[:id]
     self.last_name = args[:last_name]
     self.first_name = args[:first_name]
     self.middle_name = args[:middle_name]
-    self.phone = args[:phone]
-    self.telegram = args[:telegram]
+    self.contacts = args
     self.github = args[:github]
-    self.email = args[:email]
+
   end
 
   # Сеттеры с валидацией
@@ -58,26 +57,6 @@ class Student
     raise ArgumentError, "Некорректное отчество: #{value}" unless Student.valid_name?(value)
 
     @middle_name = value
-  end
-
-  def phone=(value)
-    if value.nil? || Student.valid_phone?(value)
-      @phone = value
-    else
-      raise ArgumentError, "Недопустимый формат телефонного номера: #{value}"
-    end
-  end
-
-  def email=(value)
-    raise ArgumentError, "Некорректный email: #{value}" unless Student.valid_email?(value)
-
-    @email = value
-  end
-
-  def telegram=(value)
-    raise ArgumentError, "Некорректный Telegram ник: #{value}" unless Student.valid_telegram?(value)
-
-    @telegram = value
   end
 
   def github=(value)
@@ -103,6 +82,19 @@ class Student
   # Метод для проведения общей валидации
   def validate
     validate_github && validate_contact
+  end
+
+  def contacts=(args = {phone: @phone, telegram: @telegram, email: @email, github: @github})
+    
+    raise "Некорректный номер телефона"  if Student.valid_phone?(args[:phone]) == false
+    @phone = args[:phone]
+
+    raise "Некорректный телеграм аккаунт"  if Student.valid_telegram?(args[:telegram]) == false
+    @telegram = args[:telegram]
+
+    raise "Некорректная почта"  if Student.valid_email?(args[:email]) == false
+    @mail = args[:email]
+
   end
 
   # Метод для вывода информации об объекте
