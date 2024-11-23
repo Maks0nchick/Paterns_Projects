@@ -1,96 +1,81 @@
-class Student < Person
-  attr_reader :telegram, :email, :phone_number
+# student.rb
 
-  def initialize(surname:, firstname:, lastname:, id: nil, phone_number: nil, telegram: nil, email: nil, git: nil)
-    set_contacts(phone_number: phone_number, email: email, telegram: telegram)
-    super(surname: surname, firstname: firstname, lastname: lastname, id: id, git: git, contact: concatenate_contacts)
+class Student
+  # Конструктор с обязательными и необязательными параметрами
+  def initialize(id:, surname:, name:, patronymic:, phone: nil, telegram: nil, email: nil, github: nil)
+    @id = id
+    @surname = surname
+    @name = name
+    @patronymic = patronymic
+    @phone = phone
+    @telegram = telegram
+    @email = email
+    @github = github
   end
 
-  def concatenate_contacts
-    (@phone_number ||= '') + ' ' + (@email ||= '') + ' ' + (@telegram ||= '')
+  # Геттеры
+  def id
+    @id
   end
 
-  def phone_number=(phone_number)
-    if phone_number.nil?
-      @phone_number = nil
-    elsif Student.is_phone_number_valid? (phone_number)
-      @phone_number = phone_number.gsub(' ', '')
-    else
-      raise ArgumentError.new("Неверный номер телефона студента: #{@id} #{@surname} #{@firstname} #{@lastname}")
-    end
+  def surname
+    @surname
   end
 
-  def email=(email)
-    if email.nil? or Student.is_email_valid? (email)
-      @email = email 
-    else
-      raise ArgumentError.new("Неверный адрес электронной почты: #{@id} #{@surname} #{@firstname} #{@lastname}")
-    end
+  def name
+    @name
   end
 
-  def telegram=(telegram)
-    if telegram.nil? or Student.is_telegram_valid? (telegram)
-      @telegram = telegram
-    else
-      raise ArgumentError.new("Неверный telegram: #{@id} #{@surname} #{@firstname} #{@lastname}")
-    end
+  def patronymic
+    @patronymic
   end
 
-  private :phone_number=, :email=, :telegram=
-
-  def Student.params_from_string(str)
-    if str.empty? || str.nil?
-      raise ArgumentError.new("Строка параметров пустая")
-    end
-
-    begin
-      student_init = {}
-
-      str.split(';').each do |param|
-        key, value = param.strip.split(':').map(&:strip)
-        case key.downcase
-          when 'surname'
-            student_init[:surname] = value
-          when 'firstname'
-            student_init[:firstname] = value
-          when 'lastname'
-            student_init[:lastname] = value
-          when 'id'
-            student_init[:id] = value
-          when 'phone_number'
-            student_init[:phone_number] = value
-          when 'telegram'
-            student_init[:telegram] = value
-          when 'email'
-            student_init[:email] = value
-          when 'git'
-            student_init[:git] = value
-        end
-      end
-
-      return student_init
-    rescue => error
-      puts error.message
-    end
+  def phone
+    @phone
   end
 
-  def Student.create_from_string(str)
-    parsed_string = Student.params_from_string(str)
-    self.new(**parsed_string)
+  def telegram
+    @telegram
   end
 
-  def set_contacts(hash_contacts)
-    self.phone_number = hash_contacts[:phone_number]
-    self.email = hash_contacts[:email]
-    self.telegram = hash_contacts[:telegram]
-    self.contact = concatenate_contacts
+  def email
+    @email
   end
 
-  def to_s
-    "#{@id} #{@surname} #{@firstname} #{@lastname}\nGit: #{@git}\nДанные для связи:\nНомер телефона: #{@phone_number}\nТелеграм: #{@telegram}\nEmail: #{@email}\n\n"
+  def github
+    @github
   end
 
-  def to_str
-    "id: #{@id}; surname: #{@surname}; firstname: #{@firstname}; lastname: #{@lastname}; phone_number: #{@phone_number}; telegram: #{@telegram}; email: #{@email}; git: #{@git}"
+  # Сеттеры
+  def id=(value)
+    @id = value
+  end
+
+  def surname=(value)
+    @surname = value
+  end
+
+  def name=(value)
+    @name = value
+  end
+
+  def patronymic=(value)
+    @patronymic = value
+  end
+
+  def phone=(value)
+    @phone = value
+  end
+
+  def telegram=(value)
+    @telegram = value
+  end
+
+  def email=(value)
+    @email = value
+  end
+
+  def github=(value)
+    @github = value
   end
 end
