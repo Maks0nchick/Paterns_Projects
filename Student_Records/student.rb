@@ -1,34 +1,108 @@
-# student.rb
-
 class Student
   # Автоматическая генерация геттеров и сеттеров
-  attr_accessor :id, :last_name, :first_name, :middle_name, :telegram, :email, :github
-  attr_reader :phone # Геттер для телефона отдельно, чтобы добавить проверку в сеттер
+  attr_accessor :id, :telegram, :github
+  attr_reader :last_name, :first_name, :middle_name, :email, :phone
 
   # Метод класса для проверки валидности телефонного номера
-  def Student.valid_phone?(phone)
+  def self.valid_phone?(phone)
     phone.match?(/\A\+?\d{10,15}\z/) # Телефон должен быть от 10 до 15 цифр, с опциональным "+"
+  end
+
+  # Метод класса для проверки валидности имени или фамилии
+  def self.valid_name?(name)
+    name.match?(/\A[А-Яа-яЁёA-Za-z-]+\z/) # Только буквы, допускаются дефисы
+  end
+
+  # Метод класса для проверки валидности Telegram-ника
+  def self.valid_telegram?(telegram)
+    telegram.nil? || telegram.match?(/\A@[A-Za-z0-9_]+\z/) # Должно начинаться с @ и содержать буквы, цифры или _
+  end
+
+  # Метод класса для проверки валидности email
+  def self.valid_email?(email)
+    email.nil? || email.match?(/\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i) # Простая проверка email
+  end
+
+  # Метод класса для проверки валидности GitHub URL
+  def self.valid_github?(github)
+    github.nil? || github.match?(/\Ahttps?:\/\/(www\.)?github\.com\/[A-Za-z0-9_-]+\/?\z/) # Стандартный формат GitHub URL
   end
 
   # Конструктор принимает хэш параметров
   def initialize(args = {})
-    @id = args[:id]
-    @last_name = args[:last_name]
-    @first_name = args[:first_name]
-    @middle_name = args[:middle_name]
-    self.phone = args[:phone] # Используем сеттер для проверки телефона
-    @telegram = args[:telegram]
-    @github = args[:github]
-    @email = args[:email]
+    self.id = args[:id]
+    self.last_name = args[:last_name]
+    self.first_name = args[:first_name]
+    self.middle_name = args[:middle_name]
+    self.phone = args[:phone]
+    self.telegram = args[:telegram]
+    self.github = args[:github]
+    self.email = args[:email]
   end
 
-  # Сеттер для телефона с проверкой
+  # Сеттеры с валидацией
+
+  def last_name=(value)
+    raise ArgumentError, "Некорректная фамилия: #{value}" unless Student.valid_name?(value)
+
+    @last_name = value
+  end
+
+  def first_name=(value)
+    raise ArgumentError, "Некорректное имя: #{value}" unless Student.valid_name?(value)
+
+    @first_name = value
+  end
+
+  def middle_name=(value)
+    raise ArgumentError, "Некорректное отчество: #{value}" unless Student.valid_name?(value)
+
+    @middle_name = value
+  end
+
   def phone=(value)
     if value.nil? || Student.valid_phone?(value)
       @phone = value
     else
       raise ArgumentError, "Недопустимый формат телефонного номера: #{value}"
     end
+  end
+
+  def email=(value)
+    raise ArgumentError, "Некорректный email: #{value}" unless Student.valid_email?(value)
+
+    @email = value
+  end
+
+  def telegram=(value)
+    raise ArgumentError, "Некорректный Telegram ник: #{value}" unless Student.valid_telegram?(value)
+
+    @telegram = value
+  end
+
+  def github=(value)
+    raise ArgumentError, "Некорректный GitHub URL: #{value}" unless Student.valid_github?(value)
+
+    @github = value
+  end
+
+  # Метод для валидации наличия GitHub
+  def validate_github
+    return False if @github.nil? || @github.empty?
+    return True
+  end
+
+  # Метод для валидации наличия любого контакта
+  def validate_contact
+    if [@phone, @telegram, @email].all?(&:nil?) || [@phone, @telegram, @email].all?(&:empty?)
+      return False
+    end
+    return True
+  end
+
+  # Метод для проведения общей валидации
+  def validate
+    validate_github && validate_contact
   end
 
   # Метод для вывода информации об объекте
