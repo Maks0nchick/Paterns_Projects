@@ -1,81 +1,21 @@
-# student.rb
+ # Используем attr_accessor для автоматической генерации геттеров и сеттеров
+ attr_accessor :id, :last_name, :first_name, :middle_name, :phone, :telegram, :email, :github
 
-class Student
-  # Конструктор с обязательными и необязательными параметрами
-  def initialize(id:, surname:, name:, patronymic:, phone: nil, telegram: nil, email: nil, github: nil)
-    @id = id
-    @surname = surname
-    @name = name
-    @patronymic = patronymic
-    @phone = phone
-    @telegram = telegram
-    @email = email
-    @github = github
+ # Конструктор принимает один аргумент - хэш параметров
+ def initialize(args = {id:, last_name:, first_name:, middle_name:, phone: nil, telegram: nil, email: nil, github: nil})
+   @id = args[:id]
+   @last_name = args[:last_name]
+   @first_name = args[:first_name]
+   @middle_name = args[:middle_name]
+   @phone = args[:phone]
+   @telegram = args[:telegram]
+   @email = args[:email]
+   @github = args[:github]
   end
-
-  # Геттеры
-  def id
-    @id
-  end
-
-  def surname
-    @surname
-  end
-
-  def name
-    @name
-  end
-
-  def patronymic
-    @patronymic
-  end
-
-  def phone
-    @phone
-  end
-
-  def telegram
-    @telegram
-  end
-
-  def email
-    @email
-  end
-
-  def github
-    @github
-  end
-
-  # Сеттеры
-  def id=(value)
-    @id = value
-  end
-
-  def surname=(value)
-    @surname = value
-  end
-
-  def name=(value)
-    @name = value
-  end
-
-  def patronymic=(value)
-    @patronymic = value
-  end
-
-  def phone=(value)
-    @phone = value
-  end
-
-  def telegram=(value)
-    @telegram = value
-  end
-
-  def email=(value)
-    @email = value
-  end
-
-  def github=(value)
-    @github = value
-  end
-end
+  # Метод to_s для вывода информации об объекте
+  def to_s
+    info = "ID: #{@id}\nФИО: #{@last_name} #{@first_name} #{@middle_name}\n"
+    info = "ID: #{@id || 'не указан'}\nФИО: #{@last_name} #{@first_name} #{@middle_name}\n"
+    info += "Телефон: #{@phone || 'не указан'}\n"
+    info += "Телеграм: #{@telegram || 'не указан'}\n"
+    info += "Почта: #{@email || 'не указана'}\n"
