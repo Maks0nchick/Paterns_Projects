@@ -1,104 +1,45 @@
+# Базовый класс Person
 class Person
-  attr_accessor :id
-  attr_reader :surname, :firstname, :lastname, :git, :contact
+  attr_reader :last_name, :first_name, :middle_name, :phone, :telegram, :mail, :github
 
-  def initialize(surname:, firstname:, lastname:, id: nil, git: nil, contact: nil)
-    self.surname = surname
-    self.firstname = firstname
-    self.lastname = lastname
-    self.id = id
-    self.git = git
-    self.contact = contact
+  def initialize(last_name, first_name, middle_name, phone = nil, telegram = nil, mail = nil, github = nil)
+    @last_name = last_name
+    @first_name = first_name
+    @middle_name = middle_name
+    @phone = phone
+    @telegram = telegram
+    @mail = mail
+    @github = github
   end
 
-  def surname=(surname)
-    if !(surname.nil?) and Person.is_name_valid? (surname)
-      @surname = surname
+  # Метод для фамилии и инициалов
+  def surname_with_initials
+    "#{@last_name} #{@first_name[0]}.#{@middle_name[0]}."
+  end
+
+  # Метод для получения одного из контактов
+  def contact_info
+    if @phone
+      "Телефон: #{@phone}"
+    elsif @telegram
+      "Телеграм: #{@telegram}"
+    elsif @mail
+      "Почта: #{@mail}"
     else
-      raise ArgumentError.new("Неверная фамилия студента: #{@id}")
+      "Контакт не указан"
     end
   end
 
-  def firstname=(firstname)
-    if !(firstname.nil?) and Person.is_name_valid? (firstname)
-      @firstname = firstname
-    else
-      raise ArgumentError.new("Неверная фамилия студента: #{@id}")
-    end
+  # Метод для получения GitHub
+  def github_info
+    @github || "GitHub не указан"
   end
+end
 
-  def lastname=(lastname)
-    if !(lastname.nil?) and Person.is_name_valid? (lastname)
-      @lastname = lastname
-    else
-      raise ArgumentError.new("Неверная фамилия студента: #{@id}")
-    end
-  end
-
-  def git=(git)
-    if git.nil? or Person.is_git_valid? (git)
-      @git = git
-    else
-      raise ArgumentError.new("Неверный git: #{@id} #{@surname} #{@firstname} #{@lastname}")
-    end
-  end
-
-  def contact=(contacts_string)
-    contact = contacts_string.to_s.split[0]
-    if contact.nil? or Person.is_phone_number_valid? (contact) or Person.is_email_valid? (contact) or Person.is_telegram_valid? (contact)
-      @contact = contact
-    else
-      raise ArgumentError.new("Неверный контакт человека: #{@id} #{@surname} #{@firstname} #{@lastname}")
-    end
-  end
-
-  private :surname=, :firstname=, :lastname=, :id=, :git=
-  protected :contact=
-
-  def Person.is_phone_number_valid? (checked_phone_number)
-    phone_number_reg = /^\+?\d{1,3}\s?\(?\s*\d{3}\s*\)?\s?\d{3}\-{0,1}\d{2}\-{0,1}\d{2}\s*$/
-    return checked_phone_number =~ phone_number_reg
-  end
-
-  def Person.is_email_valid? (checked_email)
-    email_reg = /^[A-Za-z0-9._-]+\@[A-Za-z0-9._-]{0,5}mail\.[A-Za-z0-9._-]+/
-    return checked_email =~ email_reg
-  end
-
-  def Person.is_name_valid? (checked_name)
-    name_reg = /^[A-Za-zА-Яа-я]+$/
-    return checked_name =~ name_reg
-  end
-
-  def Person.is_git_valid? (checked_git)
-    git_reg = /^github\.com\/[A-Za-z0-9._-]+\/?$/
-    return checked_git =~ git_reg
-  end
-
-  def Person.is_telegram_valid? (checked_telegram)
-    telegram_reg = /^@[A-Za-z0-9_]{4,20}$/
-    return checked_telegram =~ telegram_reg
-  end
-
-  def has_git?
-    return !(self.git.nil?)
-  end
-
-  def has_contact?
-    return !(self.contact.nil?)
-  end
-
-  def get_name
-    "#{@surname} #{@firstname[0].upcase}.#{@lastname[0].upcase}."
-  end
-
-  def get_git_and_contact
-    "Git: #{@git} #{self.contact}"
-  end
-
+# Класс Student наследует от Person
+class Student < Person
+  # Метод для краткой информации о студенте
   def getInfo
-    "#{self.get_name} #{self.get_git_and_contact}"
+    "#{surname_with_initials}; #{github_info}; #{contact_info}"
   end
-
-  public :has_git?, :has_contact?, :get_name, :get_git_and_contact, :getInfo
 end
