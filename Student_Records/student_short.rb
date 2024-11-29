@@ -1,23 +1,39 @@
-class Student_Short < Person
-  def initialize(id:, name:, git:, contact:)
-    initials = name.split[1].split('.').map(&:capitalize)
-    surname, firstname, lastname = name.split[0], initials[0], initials[1]
+class Student_short < Person
+  attr_reader :id
 
-    if id.nil?
-      raise ArgumentError.new("Отсутствует id студента: #{surname} #{firstname}.#{lastname}")
+  # Конструктор с ID и строкой
+  def initialize(id, info_str = nil)
+    @id = id
+    if info_str
+      # Разбираем строку с информацией и создаем объект Person
+      data = info_str.split(';')
+      last_name, first_name, middle_name, github, contact = data
+      first_name = first_name.strip.split(' ').first
+      middle_name = middle_name.strip.split(' ').first
+
+      # Вызов конструктора суперкласса Person
+      super(last_name.strip, first_name, middle_name, *parse_contact(contact.strip), github.strip)
     end
-
-    super(surname: surname, firstname: firstname, lastname: lastname, id: id, git: git, contact: contact)
   end
 
-  def self.create_from_string(id:, data:)
-    name_and_contact = data.split
-    name = name_and_contact[0..1].join(' ')
-    contact = name_and_contact[-1]
-    self.new(id: id, name: name, git: name_and_contact[2], contact: contact)
+  # Метод для получения краткой информации о Student_short
+  def getInfo
+    "#{id}; #{surname_with_initials}; #{github_info}; #{contact_info}"
   end
 
-  def to_s
-    "#{@id} #{self.get_name} #{@git} #{@contact}"
+  private
+
+  # Метод для парсинга контактной информации (телефон, telegram, почта)
+  def parse_contact(contact_str)
+    case contact_str
+    when /Телефон: (.+)/
+      return [$1, nil, nil]
+    when /Телеграм: (.+)/
+      return [nil, $1, nil]
+    when /Почта: (.+)/
+      return [nil, nil, $1]
+    else
+      return [nil, nil, nil]
+    end
   end
 end
