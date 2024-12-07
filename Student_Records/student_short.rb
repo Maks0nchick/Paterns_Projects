@@ -1,40 +1,18 @@
 class StudentShort < Person
-  def initialize_from_student(student)
-    raise ArgumentError, "Ожидается объект класса Student" unless student.is_a?(Student)
+  attr_reader :last_name_and_initials, :contact
 
-    super(
-      id: student.id,
-      surname_initials: student.surname_initials,
-      github: student.github,
-      contact: student.contact
-    )
+  def initialize(id:, last_name_and_initials:, contact:, github: nil)
+    super(id: id, github: github)
+    @last_name_and_initials = last_name_and_initials
+    @contact = contact
   end
 
-  def initialize(id, info_str)
-    raise ArgumentError, "ID должен быть числом" unless id.is_a?(Integer)
-    raise ArgumentError, "Строка информации не может быть пустой" if info_str.strip.empty?
-
-    parts = parse_info(info_str)
-
-    super(
-      id: id,
-      surname_initials: parts[:surname_initials],
-      github: parts[:github],
-      contact: parts[:contact]
-    )
+  def self.from_student(student)
+    contact = student.phone || student.telegram || student.email || 'не указан'
+    new(id: student.id, last_name_and_initials: student.last_name_and_initials, contact: contact, github: student.github)
   end
 
-  private
-
-  # Парсинг строки
-  def parse_info(info_str)
-    parts = info_str.split(';').map(&:strip)
-    raise ArgumentError, "Некорректный формат строки" if parts.size != 3
-
-    {
-      surname_initials: parts[0],
-      github: parts[1],
-      contact: parts[2]
-    }
+  def to_s
+    super + ", ФИО: #{last_name_and_initials}, Контакт: #{contact}"
   end
 end

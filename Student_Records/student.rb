@@ -1,35 +1,41 @@
 class Student < Person
-  attr_reader :last_name, :first_name, :middle_name, :email, :phone, :telegram
+  attr_reader :last_name, :first_name, :middle_name, :phone, :telegram, :email
 
-  def initialize(args = { id: nil, last_name:, first_name:, middle_name: nil, email: nil, phone: nil, telegram: nil, github: nil })
-    super(
-      id: args[:id],
-      surname_initials: generate_surname_initials(args[:last_name], args[:first_name], args[:middle_name]),
-      github: args[:github],
-      contact: determine_contact(args)
-    )
-
-    @last_name = args[:last_name]
-    @first_name = args[:first_name]
-    @middle_name = args[:middle_name]
-    @email = args[:email]
-    @phone = args[:phone]
-    @telegram = args[:telegram]
+  def initialize(id:, github: nil, last_name:, first_name:, middle_name: nil, phone: nil, telegram: nil, email: nil)
+    super(id: id, github: github)
+    @last_name = last_name
+    @first_name = first_name
+    @middle_name = middle_name
+    @phone = phone
+    @telegram = telegram
+    @mail = email
   end
 
-  private
-
-  # Генерация фамилии и инициалов
-  def generate_surname_initials(last_name, first_name, middle_name)
-    initials = "#{first_name[0]}.#{middle_name.nil? ? '' : middle_name[0] + '.'}"
-    "#{last_name} #{initials}"
+  def validate?
+    validate_contacts? && validate_github?
   end
 
-  # Определение основного контакта
-  def determine_contact(args)
-    return "Телефон: #{args[:phone]}" if args[:phone] && !args[:phone].empty?
-    return "Телеграм: #{args[:telegram]}" if args[:telegram] && !args[:telegram].empty?
-    return "Почта: #{args[:email]}" if args[:email] && !args[:email].empty?
-    "Контакт не указан"
+  def validate_contacts?
+    [@phone, @telegram, @mail].any? { |contact| !contact.nil? && !contact.empty? }
+  end
+
+  def validate_github?
+    !@github.nil? && !@github.empty?
+  end
+
+  def get_info
+    "#{last_name_and_initials}, GitHub: #{github || 'не указан'}, Контакт: #{one_of_contacts}"
+  end
+
+  def last_name_and_initials
+    "#{last_name} #{first_name[0]}.#{middle_name ? middle_name[0] + '.' : ''}"
+  end
+
+  def one_of_contacts
+    @phone || @telegram || @mail || 'не указан'
+  end
+
+  def to_s
+    super + ", ФИО: #{last_name_and_initials}, Контакты: #{one_of_contacts}"
   end
 end
