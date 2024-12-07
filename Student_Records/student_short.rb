@@ -1,39 +1,54 @@
-class Student_short < Person
-  attr_reader :id
+class StudentShort
+  # Создаем геттеры для полей (без сеттеров, чтобы поля нельзя было редактировать)
+  attr_reader :id, :surname_initials, :github, :contact
 
-  # Конструктор с ID и строкой
-  def initialize(id, info_str = nil)
-    @id = id
-    if info_str
-      # Разбираем строку с информацией и создаем объект Person
-      data = info_str.split(';')
-      last_name, first_name, middle_name, github, contact = data
-      first_name = first_name.strip.split(' ').first
-      middle_name = middle_name.strip.split(' ').first
+  # Конструктор №1: принимает объект класса Student
+  def initialize_from_student(student)
+    raise ArgumentError, "Ожидается объект класса Student" unless student.is_a?(Student)
 
-      # Вызов конструктора суперкласса Person
-      super(last_name.strip, first_name, middle_name, *parse_contact(contact.strip), github.strip)
-    end
+    @id = student.id
+    @surname_initials = "#{student.last_name} #{student.first_name[0]}.#{student.middle_name ? student.middle_name[0] + '.' : ''}"
+    @github = student.github
+    @contact = determine_contact(student)
   end
 
-  # Метод для получения краткой информации о Student_short
-  def getInfo
-    "#{id}; #{surname_with_initials}; #{github_info}; #{contact_info}"
+  # Конструктор №2: принимает ID и строку
+  def initialize(id, info_str)
+    raise ArgumentError, "ID должен быть числом" unless id.is_a?(Integer)
+    raise ArgumentError, "Строка информации не может быть пустой" if info_str.strip.empty?
+
+    @id = id
+    parse_info(info_str)
+  end
+
+  # Метод для вывода краткой информации об объекте
+  def to_s
+    "ID: #{@id}, Фамилия и инициалы: #{@surname_initials}, GitHub: #{@github}, Контакт: #{@contact}"
   end
 
   private
 
-  # Метод для парсинга контактной информации (телефон, telegram, почта)
-  def parse_contact(contact_str)
-    case contact_str
-    when /Телефон: (.+)/
-      return [$1, nil, nil]
-    when /Телеграм: (.+)/
-      return [nil, $1, nil]
-    when /Почта: (.+)/
-      return [nil, nil, $1]
+  # Парсер строки информации для конструктора №2
+  def parse_info(info_str)
+    # Предполагаем, что строка имеет формат: "ФамилияИнициалы; GitHub; Контакт"
+    parts = info_str.split(';').map(&:strip)
+    raise ArgumentError, "Некорректный формат строки" if parts.size != 3
+
+    @surname_initials = parts[0]
+    @github = parts[1]
+    @contact = parts[2]
+  end
+
+  # Определение контакта для конструктора из Student
+  def determine_contact(student)
+    if student.phone && !student.phone.empty?
+      "Телефон: #{student.phone}"
+    elsif student.telegram && !student.telegram.empty?
+      "Телеграм: #{student.telegram}"
+    elsif student.email && !student.email.empty?
+      "Почта: #{student.email}"
     else
-      return [nil, nil, nil]
+      "Контакт не указан"
     end
   end
 end
