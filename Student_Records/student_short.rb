@@ -1,45 +1,35 @@
 class StudentShort
-  attr_reader :id, :last_name_and_initials, :github, :contact
+  # Поля только для чтения
+  attr_reader :id, :initials, :github, :contact
 
-  # Основной конструктор
-  def initialize(id:, last_name_and_initials:, github:, contact:)
+  # Конструктор 1: Принимает объект класса Student
+  def initialize(student)
+    @id = student.id
+    @initials = "#{student.last_name} #{student.first_name[0]}.#{student.middle_name.nil? ? '' : student.middle_name[0] + '.'}"
+    @github = student.github
+    @contact = format_contact(student)
+  end
+
+  # Конструктор 2: Принимает ID и строку, содержащую информацию
+  def initialize_from_string(id, initials, github, contact)
+    # Устанавливаем id
     @id = id
-    @last_name_and_initials = last_name_and_initials
+    @initials = initials
     @github = github
     @contact = contact
   end
 
-  # Конструктор для создания из объекта Student
-  def self.from_student(student)
-    raise ArgumentError, "Аргумент должен быть объектом класса Student" unless student.is_a?(Student)
-
-    # Извлечение данных из объекта Student
-    id = student.id
-    last_name_and_initials = "#{student.last_name} #{student.first_name[0]}.#{student.middle_name ? student.middle_name[0] + '.' : ''}"
-    github = student.github
-    contact = student.get_contact # Используем метод get_contact из Student
-
-    # Создание объекта StudentShort
-    new(id: id, last_name_and_initials: last_name_and_initials, github: github, contact: contact)
-  end
-
-  # Конструктор для создания из ID и строки
-  def self.from_string(id, info_string)
-    # Разделяем строку по ";"
-    parts = info_string.split(";").map(&:strip)
-    raise ArgumentError, "Неверный формат строки" unless parts.size == 3
-
-    last_name_and_initials, github, contact = parts
-
-    # Проверка валидности GitHub URL
-    raise ArgumentError, "Некорректный GitHub URL" unless Student.valid_github?(github)
-
-    # Создаем объект StudentShort
-    new(id: id, last_name_and_initials: last_name_and_initials, github: github, contact: contact)
+  # Метод для форматирования контактов
+  def format_contact(student)
+    contact_info = []
+    contact_info << "Телефон: #{student.phone}" if student.phone
+    contact_info << "Telegram: #{student.telegram}" if student.telegram
+    contact_info << "Email: #{student.email}" if student.email
+    contact_info.join(' ; ')
   end
 
   # Метод для вывода информации об объекте
   def to_s
-    "ID: #{@id}; ФИО: #{@last_name_and_initials}; GitHub: #{@github}; Контакт: #{@contact}"
+    "ID: #{@id}, ФИО: #{@initials}, GitHub: #{@github}, Контакты: #{@contact}"
   end
 end
