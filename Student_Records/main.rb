@@ -1,54 +1,43 @@
-require './person.rb'
-require './student.rb'
-require './student_file_IO.rb'
-require './student_short.rb'
-
 def main
-  begin
-    # Создаем объект Person
-    person = Person.new(surname: 'Каупервуд', firstname: 'Фрэнк', lastname: 'Алджернон', id: 1, git: "github.com/Cowperwood/", contact: "@Bruh123")
-    puts "Человек: #{person.getInfo}"
+  # Создание объекта Person
+  person = Person.new(id: 1, github: "https://github.com/example", contact: "example@example.com")
+  puts "=== Объект Person ==="
+  puts person.to_s
+  puts
 
-    # Создаем объект Student с полными данными
-    student1 = Student.new(
-      id: 5, surname: 'Каупервуд', firstname: 'Фрэнк', lastname: 'Алджернон',
-      phone_number: '+7 (905) 404-57-54', telegram: "@CowperwoodFinance",
-      email: "CowperwoodF@gmail.com", git: "github.com/Cowperwood/"
-    )
-    puts "\nСтудент 1: #{student1}"
+  # Создание объекта Student
+  student = Student.new(
+    id: 2,
+    github: "https://github.com/studentexample",
+    last_name: "Иванов",
+    first_name: "Иван",
+    middle_name: "Иванович",
+    phone: "+79161234567",
+    telegram: "@ivan_student",
+    email: "ivan@example.com"
+  )
+  puts "=== Объект Student ==="
+  puts student.to_s
+  puts
+  puts "Краткая информация о студенте: #{student.get_short_name}"
+  puts "Полная информация о студенте: #{student.getInfo}"
+  puts
 
-    # Создаем объект Student с минимальными данными
-    student2 = Student.new(
-      id: 10, surname: 'Белокобыльский', firstname: 'Богдан', lastname: 'Витальевич',
-      git: "github.com/bagdad1970/", email: 'Bogdan@mail.ru'
-    )
-    puts "\nСтудент 2: #{student2}"
+  # Создание объекта StudentShort из объекта Student
+  student_short = StudentShort.new(student)
+  puts "=== Объект StudentShort (созданный из Student) ==="
+  puts student_short.to_s
+  puts
 
-    # Создаем объект Student_Short из уже существующего объекта Student
-    student_short1 = Student_Short.create_from_student(student1)
-    puts "\nКраткая информация о студенте 1: #{student_short1}"
-
-    # Создаем объект Student_Short из строки
-    student_short2 = Student_Short.create_from_string(id: 2, data: "Каупервуд Ф.А. github.com/Cowperwood/ CowperwoordF@gmail.com")
-    puts "\nКраткая информация о студенте 2: #{student_short2}"
-
-    # Пример использования массива студентов и записи в файл
-    student_array = [student1, student2]  # Создаем массив студентов
-    puts "\nМассив студентов:"
-    p student_array
-
-    # Сохраняем студентов в файл
-    Student.write_to_txt('./student.txt', student_array)
-
-    # Чтение студентов из файла
-    student_array_txt = Student.read_from_txt('./student.txt')
-    puts "\nДанные студентов из файла:"
-    puts student_array_txt
-
-  rescue => err
-    puts "Произошла ошибка: #{err.message}"
-  end
+  # Создание объекта StudentShort из строки
+  student_short_from_string = StudentShort.from_string(
+    3,
+    "Петров П.И.",
+    "https://github.com/petrov",
+    "Телефон: +79876543210 ; Email: petrov@example.com"
+  )
+  puts "=== Объект StudentShort (созданный из строки) ==="
+  puts student_short_from_string.to_s
 end
 
-# Запуск основной программы
 main
