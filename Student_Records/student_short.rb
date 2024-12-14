@@ -1,5 +1,5 @@
 # Класс StudentShort, наследующий от BaseStudent
-class StudentShort < BaseStudent
+class StudentShort < Person
   attr_reader :initials, :contact
 
   def initialize(id:, github: nil, initials:, contact:)

@@ -1,5 +1,5 @@
 # Базовый класс для студентов
-class BaseStudent
+class Person
   attr_reader :id, :github
 
   def initialize(id:, github: nil)

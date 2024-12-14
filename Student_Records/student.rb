@@ -1,5 +1,5 @@
 # Класс Student, наследующий от BaseStudent
-class Student < BaseStudent
+class Student < Person
   attr_reader :last_name, :first_name, :middle_name, :email, :phone, :telegram
 
   def initialize(id:, github: nil, last_name:, first_name:, middle_name: nil, email: nil, phone: nil, telegram: nil)
