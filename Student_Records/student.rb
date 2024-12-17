@@ -1,129 +1,97 @@
-class Student
-  # Автоматическая генерация геттеров и сеттеров
-  attr_accessor :id, :telegram, :github
-  attr_reader :last_name, :first_name, :middle_name, :email, :phone
+# Класс Student, наследующий от BaseStudent
+class Student < Person
+  attr_reader :last_name, :first_name, :middle_name, :email, :phone, :telegram
 
-  # Метод класса для проверки валидности телефонного номера
-  def self.valid_phone?(phone)
-    phone.match?(/\A\+?\d{10,15}\z/) # Телефон должен быть от 10 до 15 цифр, с опциональным "+"
+  def initialize(id:, github: nil, last_name:, first_name:, middle_name: nil, email: nil, phone: nil, telegram: nil)
+    super(id: id, github: github)
+    self.last_name = last_name
+    self.first_name = first_name
+    self.middle_name = middle_name
+    self.email = email
+    self.phone = phone
+    self.telegram = telegram
   end
 
-  # Метод класса для проверки валидности имени или фамилии
+  # Валидаторы для полей
   def self.valid_name?(name)
-    name.match?(/\A[А-Яа-яЁёA-Za-z-]+\z/) # Только буквы, допускаются дефисы
+    name.match?(/\A[\u0410-\u044Fa-zA-Z-]+\z/)
   end
 
-  # Метод класса для проверки валидности Telegram-ника
-  def self.valid_telegram?(telegram)
-    telegram.nil? || telegram.match?(/\A@[A-Za-z0-9_]+\z/) # Должно начинаться с @ и содержать буквы, цифры или _
-  end
-
-  # Метод класса для проверки валидности email
   def self.valid_email?(email)
-    email.nil? || email.match?(/\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i) # Простая проверка email
+    email.nil? || email.match?(/\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i)
   end
 
-  # Метод класса для проверки валидности GitHub URL
-  def self.valid_github?(github)
-    github.nil? || github.match?(/\Ahttps?:\/\/(www\.)?github\.com\/[A-Za-z0-9_-]+\/?\z/) # Стандартный формат GitHub URL
+  def self.valid_phone?(phone)
+    phone.nil? || phone.match?(/\A\+?\d{10,15}\z/)
   end
 
-  # Конструктор принимает хэш параметров
-  def initialize(args = {id: nil, telegram: nil, github: nil, last_name:, first_name:, middle_name: nil, email: nil, phone: nil})
-    self.id = args[:id]
-    self.last_name = args[:last_name]
-    self.first_name = args[:first_name]
-    self.middle_name = args[:middle_name]
-    self.contacts = args
-    self.github = args[:github]
+  def self.valid_telegram?(telegram)
+    telegram.nil? || telegram.match?(/\A@[A-Za-z0-9_]+\z/)
   end
 
-  # Сеттеры с валидацией
+  # Сеттеры с проверкой
   def last_name=(value)
-    raise ArgumentError, "Некорректная фамилия: #{value}" unless Student.valid_name?(value)
+    raise ArgumentError, "Некорректная фамилия" unless self.class.valid_name?(value)
 
     @last_name = value
   end
 
   def first_name=(value)
-    raise ArgumentError, "Некорректное имя: #{value}" unless Student.valid_name?(value)
+    raise ArgumentError, "Некорректное имя" unless self.class.valid_name?(value)
 
     @first_name = value
   end
 
   def middle_name=(value)
-    raise ArgumentError, "Некорректное отчество: #{value}" unless value.nil? || Student.valid_name?(value)
+    raise ArgumentError, "Некорректное отчество" unless value.nil? || self.class.valid_name?(value)
 
     @middle_name = value
   end
 
-  def github=(value)
-    raise ArgumentError, "Некорректный GitHub URL: #{value}" unless Student.valid_github?(value)
+  def email=(value)
+    raise ArgumentError, "Некорректный email" unless self.class.valid_email?(value)
 
-    @github = value
+    @email = value
   end
 
-  # Метод для валидации наличия GitHub
-  def validate_github
-    return false if @github.nil? || @github.empty?
+  def phone=(value)
+    raise ArgumentError, "Некорректный номер телефона" unless self.class.valid_phone?(value)
 
-    true
+    @phone = value
   end
 
-  # Метод для валидации наличия любого контакта
-  def validate_contact
-    if [@phone, @telegram, @email].all?(&:nil?) || [@phone, @telegram, @email].all?(&:empty?)
-      return false
-    end
+  def telegram=(value)
+    raise ArgumentError, "Некорректный Telegram" unless self.class.valid_telegram?(value)
 
-    true
+    @telegram = value
   end
 
-  # Метод для проведения общей валидации
-  def validate
-    validate_github && validate_contact
+  # Проверка наличия контактов
+  def has_contact?
+    [@phone, @telegram, @email].any? { |contact| contact && !contact.empty? }
   end
 
-  def contacts=(args = {phone: @phone, telegram: @telegram, email: @email, github: @github})
-    raise "Некорректный номер телефона" if Student.valid_phone?(args[:phone]) == false
-    @phone = args[:phone]
-
-    raise "Некорректный телеграм аккаунт" if Student.valid_telegram?(args[:telegram]) == false
-    @telegram = args[:telegram]
-
-    raise "Некорректная почта" if Student.valid_email?(args[:email]) == false
-    @email = args[:email]
+  # Полная валидация
+  def validate?
+    has_github? && has_contact?
   end
 
-  # Метод для вывода информации об объекте
-  def to_s
-    info = "ID: #{@id || 'не указан'}\n"
-    info += "ФИО: #{@last_name} #{@first_name} #{@middle_name}\n"
-    info += "Телефон: #{@phone || 'не указан'}\n"
-    info += "Телеграм: #{@telegram || 'не указан'}\n"
-    info += "Почта: #{@email || 'не указана'}\n"
-    info += "GitHub: #{@github || 'не указан'}"
-    info
-  end
-
-  # Новые методы
   def get_short_name
-    "#{@last_name} #{first_name[0]}.#{middle_name.nil? ? '' : middle_name[0] + '.'}"
+    middle_initial = @middle_name ? "#{@middle_name[0]}." : ""
+    "#{@last_name} #{@first_name[0]}.#{middle_initial}"
   end
 
-  def get_contact
-    if !@phone.nil? && !@phone.empty?
-      "Телефон: #{@phone}"
-    elsif !@telegram.nil? && !@telegram.empty?
-      "Телеграм: #{@telegram}"
-    elsif !@email.nil? && !@email.empty?
-      "Почта: #{@email}"
-    else
-      "Контакты отсутствуют"
-    end
+  def to_s
+    "ID: #{@id}, ФИО: #{get_short_name}, GitHub: #{@github || 'не указан'}, Контакты: #{contact_info}"
   end
 
-  def getInfo
-    "#{get_short_name}; GitHub: #{@github || 'не указан'}; Связь: #{get_contact}"
+  private
+
+  def contact_info
+    contacts = []
+    contacts << "Телефон: #{@phone}" if @phone
+    contacts << "Telegram: #{@telegram}" if @telegram
+    contacts << "Почта: #{@email}" if @email
+    contacts.empty? ? "Нет контактов" : contacts.join(", ")
   end
 end

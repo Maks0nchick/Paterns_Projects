@@ -1,44 +1,32 @@
-class StudentShort
-  # Поля только для чтения
-  attr_reader :id, :initials, :github, :contact
+require_relative 'person'
 
-  # Конструктор 1: Принимает объект класса Student
-  def self.creat_from_student(student)
-    new(
-    id: student.id
-    initials: "#{student.last_name} #{student.first_name[0]}.#{student.middle_name.nil? ? '' : student.middle_name[0] + '.'}"
-    github: student.github
-    contact: format_contact(student)
-    )
+class Student_short < Person
+
+  def self.about_student(student)
+    new(id: student.id, git: student.git, fullname: student.fullname, contact: student.contact)
+  end  
+
+  def self.from_sting(id:,string:)
+    fullname, contact, git= read_info_from_string(string)
+    new(id: id, fullname:fullname, contact:contact, git:git)
   end
+  
+  def  self.read_info_from_string(string)
+    fullname,contact,git = string.split(', ')
+    return fullname,contact,git
+  end  
+  
+  def to_s
+    "\nID: #{@id} \nFullname: #{@fullname} \nGit: #{@git} \nContact: #{@contact}"
+  end
+
+  private attr_accessor :fullname, :contact 
 
   private_class_method :new
 
-  # Конструктор 2: Принимает ID и строку, содержащую информацию
-  def initialize(id:, initials:, github:, contact:)
-    # Устанавливаем id
-    @id = id
-    @initials = initials
-    @github = github
-    @contact = contact
-  end
-
-  def self.creat_from_sring(string)
-    id, initials, github, contact = string.split(', ')
-    new(id: id, initials: initials, github: github, contact: contact)
-  end
-
-  # Метод для форматирования контактов
-  def format_contact(student)
-    contact_info = []
-    contact_info << "Телефон: #{student.phone}" if student.phone
-    contact_info << "Telegram: #{student.telegram}" if student.telegram
-    contact_info << "Email: #{student.email}" if student.email
-    contact_info.join(' ; ')
-  end
-
-  # Метод для вывода информации об объекте
-  def to_s
-    "ID: #{@id}, ФИО: #{@initials}, GitHub: #{@github}, Контакты: #{@contact}"
-  end
-end
+    def initialize(id: nil, fullname:nil , git: nil, contact: nil)
+      super(id: id, git: git)
+      @fullname = fullname
+      @contact = contact
+    end 
+end  
