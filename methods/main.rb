@@ -6,7 +6,7 @@ def read_array_from_file(filename)
 end
 
 def main
-  puts "Задача 1.20: Найти все пропущенные числа в массиве"
+  puts "Задача 1.32: Найти количество локальных максимумов"
 
   # Проверяем существование файла
   filename = "array.txt"
@@ -19,9 +19,9 @@ def main
   array = read_array_from_file(filename)
   puts "Массив из файла: #{array}"
 
-  # Вызываем метод обработки массива
-  missing_numbers = find_missing_numbers(array)
-  puts "Пропущенные числа: #{missing_numbers}"
+  # Вызываем метод для подсчёта локальных максимумов
+  local_maxima_count = count_local_maxima(array)
+  puts "Количество локальных максимумов: #{local_maxima_count}"
 end
 
 main
