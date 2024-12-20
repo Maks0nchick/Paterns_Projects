@@ -6,8 +6,8 @@ def read_array_from_file(filename)
 end
 
 def main
-  puts "Задача 1.8: Найти индексы двух наименьших элементов массива"
-  
+  puts "Задача 1.20: Найти все пропущенные числа в массиве"
+
   # Проверяем существование файла
   filename = "array.txt"
   unless File.exist?(filename)
@@ -20,8 +20,8 @@ def main
   puts "Массив из файла: #{array}"
 
   # Вызываем метод обработки массива
-  result = find_two_min_indices(array)
-  puts "Индексы двух наименьших элементов: #{result}"
+  missing_numbers = find_missing_numbers(array)
+  puts "Пропущенные числа: #{missing_numbers}"
 end
 
 main
