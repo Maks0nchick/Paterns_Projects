@@ -1,16 +1,17 @@
-# Метод для проверки, чередуются ли целые и вещественные числа в массиве
-def check_alternating_integers_and_floats(arr)
-  # Проходим по всему массиву, начиная с первого элемента
-  (0...arr.length - 1).each do |i|
-    current = arr[i]
-    next_num = arr[i + 1]
-
-    # Проверка типа текущего и следующего числа
-    if current.is_a?(Integer) && next_num.is_a?(Integer) || current.is_a?(Float) && next_num.is_a?(Float)
-      return false
-    end
+def prime?(n)
+  return false if n <= 1
+  (2..Math.sqrt(n)).each do |i|
+    return false if n % i == 0
   end
-
-  # Если пройден весь массив и не найдено ошибок чередования, возвращаем true
   true
+end
+
+def average_of_non_primes_greater_than_prime_avg(arr)
+  primes = arr.select { |num| prime?(num) }
+  non_primes = arr.reject { |num| prime?(num) }
+  return 0 if primes.empty?
+  prime_avg = primes.sum / primes.size.to_f
+  filtered_non_primes = non_primes.select { |num| num > prime_avg }
+  return 0 if filtered_non_primes.empty?
+  filtered_non_primes.sum / filtered_non_primes.size.to_f
 end
