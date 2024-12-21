@@ -2,7 +2,7 @@ require_relative 'person'
 
 class Student_short < Person
 
-  def self.about_student(student)
+  def self.create_about_student(student)
     new(id: student.id, git: student.git, fullname: student.fullname, contact: student.contact)
   end  
 

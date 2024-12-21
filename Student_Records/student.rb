@@ -77,7 +77,7 @@ class Student < Person
   end
 
   def get_short_name
-    middle_initial = @middle_name ? "#{@middle_name[0]}." : ""
+    fullname = @middle_name ? "#{@middle_name[0]}." : ""
     "#{@last_name} #{@first_name[0]}.#{middle_initial}"
   end
 
@@ -85,13 +85,11 @@ class Student < Person
     "ID: #{@id}, ФИО: #{get_short_name}, GitHub: #{@github || 'не указан'}, Контакты: #{contact_info}"
   end
 
-  private
-
   def contact_info
-    contacts = []
-    contacts << "Телефон: #{@phone}" if @phone
-    contacts << "Telegram: #{@telegram}" if @telegram
-    contacts << "Почта: #{@email}" if @email
-    contacts.empty? ? "Нет контактов" : contacts.join(", ")
+    contact = []
+    contact << "Телефон: #{@phone}" if @phone
+    contact << "Telegram: #{@telegram}" if @telegram
+    contact << "Почта: #{@email}" if @email
+    contact.empty? ? "Нет контактов" : contacts.join(", ")
   end
 end
