@@ -76,9 +76,21 @@ class Student < Person
     has_github? && has_contact?
   end
 
+  # Получение короткого имени
   def get_short_name
-    fullname = @middle_name ? "#{@middle_name[0]}." : ""
+    middle_initial = @middle_name ? "#{@middle_name[0]}." : ""
     "#{@last_name} #{@first_name[0]}.#{middle_initial}"
+  end
+
+  # Метод для получения инициалов
+  def get_initials
+    middle_initial = @middle_name ? "#{@middle_name[0]}." : ""
+    "#{@first_name[0]}.#{middle_initial}#{@last_name[0]}."
+  end
+
+  # Метод для нахождения первого контакта
+  def get_first_contact
+    [@phone, @telegram, @email].find { |contact| contact && !contact.empty? }
   end
 
   def to_s
@@ -86,10 +98,10 @@ class Student < Person
   end
 
   def contact_info
-    contact = []
-    contact << "Телефон: #{@phone}" if @phone
-    contact << "Telegram: #{@telegram}" if @telegram
-    contact << "Почта: #{@email}" if @email
-    contact.empty? ? "Нет контактов" : contacts.join(", ")
+    contacts = []
+    contacts << "Телефон: #{@phone}" if @phone
+    contacts << "Telegram: #{@telegram}" if @telegram
+    contacts << "Почта: #{@email}" if @email
+    contacts.empty? ? "Нет контактов" : contacts.join(", ")
   end
 end
