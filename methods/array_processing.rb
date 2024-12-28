@@ -32,3 +32,11 @@ class ArrayMethods
          .sort { |a, b| a[0] <=> b[0] }
          .map { |pair| pair[1] }
   end
+
+  def reject
+    array = []
+    self.array.each do |element|
+      array.push(element) unless yield(element)
+    end
+    array
+  end
