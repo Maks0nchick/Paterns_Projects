@@ -20,8 +20,6 @@ class Student_short < Person
     "\nID: #{@id} \nInitials: #{@initials} \nGit: #{@git} \nContact: #{@contact}"
   end
 
-  private attr_accessor :initials, :contact 
-
   private_class_method :new
 
     def initialize(id: nil, initials:nil , git: nil, contact: nil)

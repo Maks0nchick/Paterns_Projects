@@ -7,9 +7,7 @@ class Student < Person
     self.last_name = last_name
     self.first_name = first_name
     self.middle_name = middle_name
-    self.email = email
-    self.phone = phone
-    self.telegram = telegram
+    set_contacts(email: email, phone: phone, telegram: telegram) # Устанавливаем контакты через метод
   end
 
   # Валидаторы для полей
@@ -29,7 +27,24 @@ class Student < Person
     telegram.nil? || telegram.match?(/\A@[A-Za-z0-9_]+\z/)
   end
 
-  # Сеттеры с проверкой
+  private
+
+  def phone=(value)
+    raise ArgumentError, "Некорректный номер телефона" unless self.class.valid_phone?(value)
+    @phone = value
+  end
+  
+  def telegram=(value)
+    raise ArgumentError, "Некорректный Telegram" unless self.class.valid_telegram?(value)
+    @telegram = value
+  end
+  
+  def email=(value)
+    raise ArgumentError, "Некорректный email" unless self.class.valid_email?(value)
+    @email = value
+  end
+
+  # Сеттеры с проверкой для ФИО
   def last_name=(value)
     raise ArgumentError, "Некорректная фамилия" unless self.class.valid_name?(value)
 
@@ -48,22 +63,12 @@ class Student < Person
     @middle_name = value
   end
 
-  def email=(value)
-    raise ArgumentError, "Некорректный email" unless self.class.valid_email?(value)
+  public
 
-    @email = value
-  end
-
-  def phone=(value)
-    raise ArgumentError, "Некорректный номер телефона" unless self.class.valid_phone?(value)
-
-    @phone = value
-  end
-
-  def telegram=(value)
-    raise ArgumentError, "Некорректный Telegram" unless self.class.valid_telegram?(value)
-
-    @telegram = value
+  def set_contacts(phone: nil, telegram: nil, email: nil)
+    self.phone = phone
+    self.telegram = telegram
+    self.email = email
   end
 
   # Проверка наличия контактов
