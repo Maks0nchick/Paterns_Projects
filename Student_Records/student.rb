@@ -81,16 +81,10 @@ class Student < Person
     has_github? && has_contact?
   end
 
-  # Получение короткого имени
-  def get_short_name
-    middle_initial = @middle_name ? "#{@middle_name[0]}." : ""
-    "#{@last_name} #{@first_name[0]}.#{middle_initial}"
-  end
-
-  # Метод для получения инициалов
+  # Метод для получения скоращение имени
   def get_initials
     middle_initial = @middle_name ? "#{@middle_name[0]}." : ""
-    "#{@first_name[0]}.#{middle_initial}#{@last_name[0]}."
+    "#{@last_name} #{@first_name[0]}.#{middle_initial}"
   end
 
   # Метод для нахождения первого контакта
