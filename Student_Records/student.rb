@@ -76,11 +76,6 @@ class Student < Person
     [@phone, @telegram, @email].any? { |contact| contact && !contact.empty? }
   end
 
-  # Полная валидация
-  def validate?
-    has_github? && has_contact?
-  end
-
   # Метод для получения скоращение имени
   def get_initials
     middle_initial = @middle_name ? "#{@middle_name[0]}." : ""

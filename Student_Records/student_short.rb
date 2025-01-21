@@ -2,6 +2,8 @@ require_relative 'person'
 
 class Student_short < Person
 
+  attr_reader :initials, :contact
+
   def self.create_about_student(student)
     new(id: student.id, git: student.git, initials: student.initials, contact: student.contact)
   end  
@@ -19,7 +21,7 @@ class Student_short < Person
   def to_s
     "\nID: #{@id} \nInitials: #{@initials} \nGit: #{@git} \nContact: #{@contact}"
   end
-
+  private :id=, :git=
   private_class_method :new
 
     def initialize(id: nil, initials:nil , git: nil, contact: nil)
