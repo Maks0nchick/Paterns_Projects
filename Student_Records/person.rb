@@ -23,30 +23,23 @@ class Person
     @id = id
   end
 
-  # Сеттер для GitHub
-  def github=(github)
-    raise ArgumentError, "Неправильный GitHub URL" unless self.class.valid_github?(github)
-  
-    @github = github
-  end
-
-  def contact
-    raise NotImplementedError, "Метод должен быть реализован в дочернем классе"
-  end
-
-  def initials
-    raise NotImplementedError, "Метод должен быть реализован в дочернем классе"
-  end
-
-  def has_git?
-    !git.nil?
+  def validate?
+    has_contact? && has_github?
   end
 
   def has_contact?
-    raise NotImplementedError, "Метод должен быть реализован в дочернем классе"
+    raise NotImplementedError, "Метод has_contact? должен быть реализован в классе наследнике"
   end
-  
-  def validate
-    has_git? && has_contact?
+
+  def has_github?
+    !github.nil?
+  end
+
+  protected
+
+  def github=(github)
+    raise ArgumentError, "  Неправильный git" unless self.class.valid_github?(git)
+
+    @git = git
   end
 end

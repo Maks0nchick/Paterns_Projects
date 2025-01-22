@@ -21,7 +21,11 @@ class Student_short < Person
   def to_s
     "\nID: #{@id} \nInitials: #{@initials} \nGit: #{@git} \nContact: #{@contact}"
   end
-  private :id=, :git=
+ 
+  def has_contact?
+    !@contact.nil?
+  end
+
   private_class_method :new
 
     def initialize(id: nil, initials:nil , git: nil, contact: nil)
