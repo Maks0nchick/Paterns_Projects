@@ -1,6 +1,6 @@
 # Базовый класс для студентов
 class Person
-  attr_reader :id, :github
+  attr_reader :initials, :contact
 
   def initialize(id:, github: nil)
     self.id = id
@@ -29,6 +29,15 @@ class Person
 
   def has_contact?
     raise NotImplementedError, "Метод has_contact? должен быть реализован в классе наследнике"
+  end
+
+  
+   def contact
+    raise NotImplementedError, "Метод contact должен быть реализован в классе-наследнике"
+  end
+
+  def initials
+    raise NotImplementedError, "Метод contact должен быть реализован в классе-наследнике"
   end
 
   def has_github?

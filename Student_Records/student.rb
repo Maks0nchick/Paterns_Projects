@@ -77,13 +77,13 @@ class Student < Person
   end
 
   # Метод для получения скоращение имени
-  def get_initials
+  def initials
     middle_initial = @middle_name ? "#{@middle_name[0]}." : ""
     "#{@last_name} #{@first_name[0]}.#{middle_initial}"
   end
 
   # Метод для нахождения первого контакта
-  def get_first_contact
+  def contact
     [@phone, @telegram, @email].find { |contact| contact && !contact.empty? }
   end
 
