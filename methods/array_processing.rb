@@ -1,81 +1,106 @@
-class ArrayMethods
+class ArrayProcessor
+  attr_reader :arr
 
-  attr_reader :array
-
-  def initialize(array)
-    self.array = array
+  def initialize(arr)
+    @arr = arr.freeze
   end
 
-  private def array=(array)
-    @array = array
+  # Метод для ввода массива
+  def self.input_array
+    puts "Введите массив чисел (целых или вещественных, через пробел):"
+    gets.chomp.split.map { |n| n.include?('.') ? n.to_f : n.to_i }
   end
 
-  def each_slice(slice_size)
-    for i in (0...array.size).step(slice_size)
-      slice = array[i, slice_size]
-      yield(slice) if block_given?
+  # Задача 1.8: Найти два минимальных элемента с их индексами
+  def find_two_min_indices
+    return [] if @arr.size < 2
+    min1, min2 = @arr.sort.take(2)
+    [@arr.index(min1), @arr.rindex(min2)]
+  end
+
+  # Задача 1.20: Найти пропущенные числа
+  def find_missing_numbers
+    (@arr.min..@arr.max).to_a - @arr
+  end
+
+  # Задача 1.32: Подсчитать локальные максимумы
+  def count_local_maxima
+    def maxima_recursive(index)
+      return 0 if index >= @arr.size - 1
+      count = (@arr[index - 1] < @arr[index] && @arr[index] > @arr[index + 1]) ? 1 : 0
+      count + maxima_recursive(index + 1)
     end
-    nil
+
+    maxima_recursive(1) # Начинаем с индекса 1 (второй элемент)
   end
 
-  def max_by(n = 1)
-    return nil if array.empty?
-    array.map { |element| [yield(element), element] }
-         .sort { |a, b| b[0] <=> a[0] }
-         .first(n)
-         .map { |pair| pair[1] }
-  end
-
-  def sort_by
-    return nil if array.empty?
-    array.map { |element| [yield(element), element] }
-         .sort { |a, b| a[0] <=> b[0] }
-         .map { |pair| pair[1] }
-  end
-
-  def reject
-    array = []
-    self.array.each do |element|
-      array.push(element) unless yield(element)
+  # Задача 1.44: Проверить чередование целых и вещественных чисел
+  def check_alternating_integers_and_floats
+    def alternating_recursive(index)
+      return true if index >= @arr.size - 1
+      current = @arr[index]
+      next_num = @arr[index + 1]
+      return false if current.is_a?(Integer) && next_num.is_a?(Integer) ||
+                      current.is_a?(Float) && next_num.is_a?(Float)
+      alternating_recursive(index + 1)
     end
-    array
+
+    alternating_recursive(0)
   end
 
-  def inject(start_value = nil)
-    accumulator = start_value.nil? ? array[0] : start_value
-    start = start_value.nil? ? 1 : 0
-    array[start..-1].each do |i|
-      accumulator = yield(accumulator, i) if block_given?
-    end
-    accumulator
+  # Задача 1.56: Среднее ненатуральных чисел больше среднего натуральных
+  def self.prime?(n)
+    return false if n <= 1
+    !(2..Math.sqrt(n).to_i).any? { |i| n % i == 0 }
   end
 
-  def cycle(number)
-    number.times do
-      for element in array
-        yield (element) if block_given?
-      end
-    end
-    nil
+  def average_of_non_primes_greater_than_prime_avg
+    primes, non_primes = @arr.partition { |num| self.class.prime?(num) }
+    return 0 if primes.empty?
+    prime_avg = primes.reduce(:+) / primes.size.to_f
+    filtered_non_primes = non_primes.select { |num| num > prime_avg }
+    return 0 if filtered_non_primes.empty?
+    filtered_non_primes.reduce(:+) / filtered_non_primes.size.to_f
   end
 end
 
-array1 = ArrayMethods.new([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-array2 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-print "#{array1.each_slice(4) { |a| puts "#{a.inspect}" }}\n"
-print "#{array2.each_slice(4) { |a| puts "#{a.inspect}" }}\n"
-puts
-print "#{array1.cycle(3) { |a| print "#{a.inspect}" }}\n"
-print "#{array2.cycle(3) { |a| print "#{a.inspect}" }}\n"
-puts
-print "#{array1.inject { |sum, element| sum + element }}\n"
-print "#{array2.inject { |sum, element| sum + element }}\n"
-puts
-print "#{array1.max_by(5) { |a| a.even? ? a : -1 }}\n"
-print "#{array2.max_by(5) { |a| a.even? ? a : -1 }}\n"
-puts
-print "#{array1.reject { |a| a.even? }}\n"
-print "#{array2.reject { |a| a.even? }}\n"
-puts
-print "#{array1.sort_by { |a| -a }}\n"
-print "#{array2.sort_by { |a| -a }}\n"
+# Основной цикл программы
+loop do
+  puts "\nВыберите метод (1-6):"
+  puts "1. Найти индексы двух минимальных элементов"
+  puts "2. Найти пропущенные числа"
+  puts "3. Подсчитать локальные максимумы"
+  puts "4. Проверить чередование целых и вещественных чисел"
+  puts "5. Среднее ненатуральных чисел больше среднего натуральных"
+  puts "6. Завершить программу"
+
+  choice = gets.to_i
+
+  case choice
+  when 1
+    arr = ArrayProcessor.input_array
+    processor = ArrayProcessor.new(arr)
+    puts "Индексы двух минимальных элементов: #{processor.find_two_min_indices}"
+  when 2
+    arr = ArrayProcessor.input_array
+    processor = ArrayProcessor.new(arr)
+    puts "Пропущенные числа: #{processor.find_missing_numbers}"
+  when 3
+    arr = ArrayProcessor.input_array
+    processor = ArrayProcessor.new(arr)
+    puts "Количество локальных максимумов: #{processor.count_local_maxima}"
+  when 4
+    arr = ArrayProcessor.input_array
+    processor = ArrayProcessor.new(arr)
+    puts "Чередуются ли целые и вещественные числа: #{processor.check_alternating_integers_and_floats}"
+  when 5
+    arr = ArrayProcessor.input_array
+    processor = ArrayProcessor.new(arr)
+    puts "Среднее ненатуральных чисел больше среднего натуральных: #{processor.average_of_non_primes_greater_than_prime_avg}"
+  when 6
+    puts "Программа завершена. До свидания!"
+    break
+  else
+    puts "Неверный выбор. Попробуйте снова."
+  end
+end
