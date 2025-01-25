@@ -1,66 +1,62 @@
 class ArrayProcessor
-  attr_reader :arr
+  attr_reader :array
 
-  def initialize(arr)
-    @arr = arr.freeze
+  def initialize(array)
+    @array = array
   end
 
-  # Метод для ввода массива
+  # Метод для ввода массива с клавиатуры
   def self.input_array
-    puts "Введите массив чисел (целых или вещественных, через пробел):"
-    gets.chomp.split.map { |n| n.include?('.') ? n.to_f : n.to_i }
+    puts "Введите элементы массива через запятую:"
+    gets.chomp.split(",").map { |el| el.strip.to_f }
   end
 
   # Задача 1.8: Найти два минимальных элемента с их индексами
   def find_two_min_indices
-    return [] if @arr.size < 2
-    min1, min2 = @arr.sort.take(2)
-    [@arr.index(min1), @arr.rindex(min2)]
+    sorted_indices = @array.zip((0...@array.size)).sort_by { |val, _idx| val }.map { |_, idx| idx }
+    sorted_indices.first(2)
   end
 
   # Задача 1.20: Найти пропущенные числа
   def find_missing_numbers
-    (@arr.min..@arr.max).to_a - @arr
-  end
-
-  # Задача 1.32: Подсчитать локальные максимумы
-  def count_local_maxima
-    def maxima_recursive(index)
-      return 0 if index >= @arr.size - 1
-      count = (@arr[index - 1] < @arr[index] && @arr[index] > @arr[index + 1]) ? 1 : 0
-      count + maxima_recursive(index + 1)
-    end
-
-    maxima_recursive(1) # Начинаем с индекса 1 (второй элемент)
+    min, max = @array.min, @array.max
+    full_range = (min..max).to_a
+    full_range - @array
   end
 
   # Задача 1.44: Проверить чередование целых и вещественных чисел
   def check_alternating_integers_and_floats
-    def alternating_recursive(index)
-      return true if index >= @arr.size - 1
-      current = @arr[index]
-      next_num = @arr[index + 1]
-      return false if current.is_a?(Integer) && next_num.is_a?(Integer) ||
-                      current.is_a?(Float) && next_num.is_a?(Float)
-      alternating_recursive(index + 1)
+    @array.each_cons(2).all? do |a, b|
+      (a.is_a?(Integer) && b.is_a?(Float)) || (a.is_a?(Float) && b.is_a?(Integer))
     end
+  end
 
-    alternating_recursive(0)
+  # Задача 1.32: Подсчитать локальные максимумы
+  def count_local_maxima
+    return 0 if @array.size < 3 # Локальный максимум возможен только в массиве с >= 3 элементами
+
+    @array.each_cons(3).count do |prev, curr, nxt|
+      curr > prev && curr > nxt
+    end
   end
 
   # Задача 1.56: Среднее ненатуральных чисел больше среднего натуральных
-  def self.prime?(n)
-    return false if n <= 1
-    !(2..Math.sqrt(n).to_i).any? { |i| n % i == 0 }
+  def average_of_non_primes_greater_than_prime_avg
+    naturals = @array.select { |num| num.is_a?(Integer) && num > 1 && prime?(num) }
+    non_naturals = @array.reject { |num| naturals.include?(num) }
+    return false if naturals.empty? || non_naturals.empty?
+
+    naturals_avg = naturals.sum.to_f / naturals.size
+    non_naturals_avg = non_naturals.sum.to_f / non_naturals.size
+    non_naturals_avg > naturals_avg
   end
 
-  def average_of_non_primes_greater_than_prime_avg
-    primes, non_primes = @arr.partition { |num| self.class.prime?(num) }
-    return 0 if primes.empty?
-    prime_avg = primes.reduce(:+) / primes.size.to_f
-    filtered_non_primes = non_primes.select { |num| num > prime_avg }
-    return 0 if filtered_non_primes.empty?
-    filtered_non_primes.reduce(:+) / filtered_non_primes.size.to_f
+  private
+
+  # Проверка на простое число
+  def prime?(n)
+    return false if n < 2
+    (2..Math.sqrt(n).to_i).none? { |i| (n % i).zero? }
   end
 end
 
@@ -92,11 +88,13 @@ loop do
   when 4
     arr = ArrayProcessor.input_array
     processor = ArrayProcessor.new(arr)
-    puts "Чередуются ли целые и вещественные числа: #{processor.check_alternating_integers_and_floats}"
+    result = processor.check_alternating_integers_and_floats
+    puts result ? "Числа чередуются." : "Числа не чередуются."
   when 5
     arr = ArrayProcessor.input_array
     processor = ArrayProcessor.new(arr)
-    puts "Среднее ненатуральных чисел больше среднего натуральных: #{processor.average_of_non_primes_greater_than_prime_avg}"
+    result = processor.average_of_non_primes_greater_than_prime_avg
+    puts result ? "Среднее ненатуральных больше среднего натуральных." : "Среднее натуральных больше либо данные некорректны."
   when 6
     puts "Программа завершена. До свидания!"
     break
