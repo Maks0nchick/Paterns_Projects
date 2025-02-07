@@ -1,81 +1,115 @@
-class ArrayMethods
-
+class ArrayProcessor
   attr_reader :array
 
   def initialize(array)
-    self.array = array
+    @array = array.dup.freeze # Защищаем от изменений
   end
 
-  private def array=(array)
-    @array = array
-  end
+  # Разбивает массив на куски по `slice_size`
+  def each_slice(slice_size, &block)
+    raise ArgumentError, "slice size must be positive" if slice_size <= 0
+    return to_enum(:each_slice, slice_size) unless block_given?
 
-  def each_slice(slice_size)
-    for i in (0...array.size).step(slice_size)
-      slice = array[i, slice_size]
-      yield(slice) if block_given?
+    i = 0
+    while i < @array.size
+      slice = []
+      j = 0
+      while j < slice_size && (i + j) < @array.size
+        slice << @array[i + j]
+        j += 1
+      end
+      block.call(slice)
+      i += slice_size
     end
     nil
   end
 
-  def max_by(n = 1)
-    return nil if array.empty?
-    array.map { |element| [yield(element), element] }
-         .sort { |a, b| b[0] <=> a[0] }
-         .first(n)
-         .map { |pair| pair[1] }
-  end
+  # Возвращает `n` элементов с максимальным значением, полученным через блок
+  def max_by(n = 1, &block)
+    return nil if @array.empty?
+    return to_enum(:max_by, n) unless block_given?
 
-  def sort_by
-    return nil if array.empty?
-    array.map { |element| [yield(element), element] }
-         .sort { |a, b| a[0] <=> b[0] }
-         .map { |pair| pair[1] }
-  end
+    max_elements = []
+    max_values = []
 
-  def reject
-    array = []
-    self.array.each do |element|
-      array.push(element) unless yield(element)
+    @array.each do |element|
+      value = block.call(element)
+
+      if max_elements.size < n
+        max_elements << element
+        max_values << value
+      else
+        min_index = 0
+        min_value = max_values[0]
+
+        (1...n).each do |i|
+          if max_values[i] < min_value
+            min_index = i
+            min_value = max_values[i]
+          end
+        end
+
+        if value > min_value
+          max_elements[min_index] = element
+          max_values[min_index] = value
+        end
+      end
     end
-    array
+
+    max_elements
   end
 
-  def inject(start_value = nil)
-    accumulator = start_value.nil? ? array[0] : start_value
-    start = start_value.nil? ? 1 : 0
-    array[start..-1].each do |i|
-      accumulator = yield(accumulator, i) if block_given?
+  # Сортировка по значению, полученному из блока
+  def sort_by(&block)
+    return to_enum(:sort_by) unless block_given?
+
+    sorted = @array.dup
+    (0...sorted.size).each do |i|
+      (i + 1...sorted.size).each do |j|
+        if block.call(sorted[i]) > block.call(sorted[j])
+          sorted[i], sorted[j] = sorted[j], sorted[i]
+        end
+      end
+    end
+    sorted
+  end
+
+  # Фильтрация элементов по условию
+  def reject(&block)
+    return to_enum(:reject) unless block_given?
+
+    result = []
+    @array.each do |element|
+      result << element unless block.call(element)
+    end
+    result
+  end
+
+  # Агрегация значений массива
+  def inject(initial = nil, &block)
+    accumulator = initial || @array[0]
+    start_index = initial.nil? ? 1 : 0
+
+    @array[start_index..-1].each do |element|
+      accumulator = block.call(accumulator, element)
     end
     accumulator
   end
 
-  def cycle(number)
-    number.times do
-      for element in array
-        yield (element) if block_given?
+  # Повторяет массив `n` раз и передаёт элементы в блок
+  def cycle(n, &block)
+    return to_enum(:cycle, n) unless block_given?
+    return nil if n <= 0
+
+    i = 0
+    while i < n
+      j = 0
+      while j < @array.size
+        block.call(@array[j])
+        j += 1
       end
+      i += 1
     end
     nil
   end
 end
-
-array1 = ArrayMethods.new([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-array2 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-print "#{array1.each_slice(4) { |a| puts "#{a.inspect}" }}\n"
-print "#{array2.each_slice(4) { |a| puts "#{a.inspect}" }}\n"
-puts
-print "#{array1.cycle(3) { |a| print "#{a.inspect}" }}\n"
-print "#{array2.cycle(3) { |a| print "#{a.inspect}" }}\n"
-puts
-print "#{array1.inject { |sum, element| sum + element }}\n"
-print "#{array2.inject { |sum, element| sum + element }}\n"
-puts
-print "#{array1.max_by(5) { |a| a.even? ? a : -1 }}\n"
-print "#{array2.max_by(5) { |a| a.even? ? a : -1 }}\n"
-puts
-print "#{array1.reject { |a| a.even? }}\n"
-print "#{array2.reject { |a| a.even? }}\n"
-puts
-print "#{array1.sort_by { |a| -a }}\n"
-print "#{array2.sort_by { |a| -a }}\n"

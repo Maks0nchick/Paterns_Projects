@@ -13,42 +13,31 @@ class ArrayProcessor
 
   # Задача 1.8: Найти два минимальных элемента с их индексами
   def find_two_min_indices
-    sorted_indices = @array.zip((0...@array.size)).sort_by { |val, _idx| val }.map { |_, idx| idx }
-    sorted_indices.first(2)
+    min1, min2 = @array.min(2)
+    [@array.index(min1), @array.rindex(min2)]
   end
 
   # Задача 1.20: Найти пропущенные числа
   def find_missing_numbers
-    min, max = @array.min, @array.max
-    full_range = (min..max).to_a
-    full_range - @array
+    ([@array.min, @array.max].min..[@array.min, @array.max].max).to_a - @array
   end
 
   # Задача 1.44: Проверить чередование целых и вещественных чисел
   def check_alternating_integers_and_floats
-    @array.each_cons(2).all? do |a, b|
-      (a.is_a?(Integer) && b.is_a?(Float)) || (a.is_a?(Float) && b.is_a?(Integer))
-    end
+    (0...@array.size - 1).all? { |i| @array[i].is_a?(Integer) != @array[i + 1].is_a?(Integer) }
   end
 
   # Задача 1.32: Подсчитать локальные максимумы
   def count_local_maxima
-    return 0 if @array.size < 3 # Локальный максимум возможен только в массиве с >= 3 элементами
-
-    @array.each_cons(3).count do |prev, curr, nxt|
-      curr > prev && curr > nxt
-    end
+    (1...@array.size - 1).count { |i| @array[i] > @array[i - 1] && @array[i] > @array[i + 1] }
   end
 
   # Задача 1.56: Среднее ненатуральных чисел больше среднего натуральных
   def average_of_non_primes_greater_than_prime_avg
-    naturals = @array.select { |num| num.is_a?(Integer) && num > 1 && prime?(num) }
-    non_naturals = @array.reject { |num| naturals.include?(num) }
-    return false if naturals.empty? || non_naturals.empty?
+    primes, non_primes = @array.partition { |n| prime?(n) }
+    return false if primes.empty? || non_primes.empty?
 
-    naturals_avg = naturals.sum.to_f / naturals.size
-    non_naturals_avg = non_naturals.sum.to_f / non_naturals.size
-    non_naturals_avg > naturals_avg
+    (non_primes.sum.to_f / non_primes.size) > (primes.sum.to_f / primes.size)
   end
 
   private
@@ -56,7 +45,7 @@ class ArrayProcessor
   # Проверка на простое число
   def prime?(n)
     return false if n < 2
-    (2..Math.sqrt(n).to_i).none? { |i| (n % i).zero? }
+    (2..Math.sqrt(n)).none? { |i| n % i == 0 }
   end
 end
 
