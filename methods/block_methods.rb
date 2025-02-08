@@ -6,7 +6,7 @@ class ArrayProcessor
   end
 
   def each_slice(slice_size, &block)
-    i = 0
+    i = 0 
     while i < @array.size
       slice = []
       j = 0
@@ -19,41 +19,22 @@ class ArrayProcessor
     end
     nil
   end
-  
 
   # Возвращает `n` элементов с максимальным значением, полученным через блок
   def max_by(n = 1, &block)
-    return nil if @array.empty?
     return to_enum(:max_by, n) unless block_given?
 
-    max_elements = []
-    max_values = []
-
-    @array.each do |element|
-      value = block.call(element)
-
-      if max_elements.size < n
-        max_elements << element
-        max_values << value
-      else
-        min_index = 0
-        min_value = max_values[0]
-
-        (1...n).each do |i|
-          if max_values[i] < min_value
-            min_index = i
-            min_value = max_values[i]
-          end
-        end
-
-        if value > min_value
-          max_elements[min_index] = element
-          max_values[min_index] = value
+    max_elements = nil
+    max_values = nil
+    each do |element|
+      value = yield(element)
+      if max_value.nil? || value > max_value
+          max_elements = element
+          max_values = value
         end
       end
+      max_elements
     end
-
-    max_elements
   end
 
   # Сортировка по значению, полученному из блока
