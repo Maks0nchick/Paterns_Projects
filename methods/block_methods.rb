@@ -8,7 +8,7 @@ class ArrayProcessor
   def each_slice(slice_size, &block)
     i = 0 
     while i < @array.size
-      slice = []
+      slice = []  
       j = 0
       while j < slice_size && (i + j) < @array.size
         slice << @array[i + j]
@@ -41,7 +41,7 @@ class ArrayProcessor
   def sort_by(&block)
     return to_enum(:sort_by) unless block_given?
 
-    sorted = @array.dup
+    sorted = @array
     (0...sorted.size).each do |i|
       (i + 1...sorted.size).each do |j|
         if block.call(sorted[i]) > block.call(sorted[j])
