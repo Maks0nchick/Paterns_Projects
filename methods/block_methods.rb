@@ -5,11 +5,7 @@ class ArrayProcessor
     @array = array.dup.freeze # Защищаем от изменений
   end
 
-  # Разбивает массив на куски по `slice_size`
   def each_slice(slice_size, &block)
-    raise ArgumentError, "slice size must be positive" if slice_size <= 0
-    return to_enum(:each_slice, slice_size) unless block_given?
-
     i = 0
     while i < @array.size
       slice = []
@@ -23,6 +19,7 @@ class ArrayProcessor
     end
     nil
   end
+  
 
   # Возвращает `n` элементов с максимальным значением, полученным через блок
   def max_by(n = 1, &block)
