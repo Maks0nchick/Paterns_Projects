@@ -1,4 +1,4 @@
-class ArrayProcessor
+class ArrayProcessor  
   attr_reader :array
 
   def initialize(array)
@@ -8,49 +8,60 @@ class ArrayProcessor
   # Метод для ввода массива с клавиатуры
   def self.input_array
     puts "Введите элементы массива через запятую:"
-    gets.chomp.split(",").map { |el| el.strip.to_f }
+    gets.chomp.split(",").map { |el| 
+      el.strip.include?('.') ? el.strip.to_f : el.strip.to_i
+    }
   end
 
-  # Задача 1.8: Найти два минимальных элемента с их индексами
+  # Метод для поиска индексов двух минимальных элементов
   def find_two_min_indices
     min1, min2 = @array.min(2)
     [@array.index(min1), @array.rindex(min2)]
   end
 
-  # Задача 1.20: Найти пропущенные числа
+  # Метод для поиска пропущенных чисел
   def find_missing_numbers
-    ([@array.min, @array.max].min..[@array.min, @array.max].max).to_a - @array
+    min_val = @array.min.to_i
+    max_val = @array.max.to_i
+    (min_val..max_val).to_a - @array
   end
 
-  # Задача 1.44: Проверить чередование целых и вещественных чисел
+  # Метод для проверки чередования целых и вещественных чисел
   def check_alternating_integers_and_floats
-    (0...@array.size - 1).all? { |i| @array[i].is_a?(Integer) != @array[i + 1].is_a?(Integer) }
+    return false if @array.size < 2 # Проверка на размер массива
+    (0...@array.size - 1).all? { |i| @array[i].is_a?(Integer) != @array[i + 1].is_a?(Integer)}
   end
 
-  # Задача 1.32: Подсчитать локальные максимумы
+
+  # Подсчитать локальные максимумы
   def count_local_maxima
     (1...@array.size - 1).count { |i| @array[i] > @array[i - 1] && @array[i] > @array[i + 1] }
   end
 
-  # Задача 1.56: Среднее ненатуральных чисел больше среднего натуральных
+
   def average_of_non_primes_greater_than_prime_avg
-    primes, non_primes = @array.partition { |n| prime?(n) }
-    return false if primes.empty? || non_primes.empty?
-
-    (non_primes.sum.to_f / non_primes.size) > (primes.sum.to_f / primes.size)
+    # Разделяем массив на натуральные и ненатуральные числа
+    natural_numbers = @array.select { |el| el.is_a?(Integer) && el > 0 }
+    non_natural_numbers = @array.reject { |el| el.is_a?(Integer) && el > 0 }
+    
+    # Проверяем, есть ли элементы для вычисления среднего
+    return false if natural_numbers.empty? || non_natural_numbers.empty?
+    
+    # Вычисляем среднее для обоих типов чисел
+    sred_natural = natural_numbers.sum / natural_numbers.size.to_f
+    sred_non_natural = non_natural_numbers.sum / non_natural_numbers.size.to_f
+    
+    # Возвращаем результат
+    sred_non_natural > sred_natural
   end
-
+  
   private
-
-  # Проверка на простое число
-  def prime?(n)
-    return false if n < 2
-    (2..Math.sqrt(n)).none? { |i| n % i == 0 }
-  end
 end
 
 # Основной цикл программы
-loop do
+
+loop do # Бесконечный цикл, прерывается с помощью break
+  # Меню
   puts "\nВыберите метод (1-6):"
   puts "1. Найти индексы двух минимальных элементов"
   puts "2. Найти пропущенные числа"
@@ -78,12 +89,12 @@ loop do
     arr = ArrayProcessor.input_array
     processor = ArrayProcessor.new(arr)
     result = processor.check_alternating_integers_and_floats
-    puts result ? "Числа чередуются." : "Числа не чередуются."
+    puts "Чередование целых и вещественных чисел: #{result}"
   when 5
     arr = ArrayProcessor.input_array
     processor = ArrayProcessor.new(arr)
     result = processor.average_of_non_primes_greater_than_prime_avg
-    puts result ? "Среднее ненатуральных больше среднего натуральных." : "Среднее натуральных больше либо данные некорректны."
+    puts "Среднее ненатуральных чисел больше среднего натуральных: #{processor.average_of_non_primes_greater_than_prime_avg}"
   when 6
     puts "Программа завершена. До свидания!"
     break
