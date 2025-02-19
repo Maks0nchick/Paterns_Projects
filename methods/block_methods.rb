@@ -24,13 +24,13 @@ class ArrayProcessor
   def max_by(n = 1, &block)
     return to_enum(:max_by, n) unless block_given?
 
-    max_elements = nil
-    max_values = nil
-    each do |element|
-      value = yield(element)
-      if max_value.nil? || value > max_value
-          max_elements = element
-          max_values = value
+    max_element = @array.first
+    max_value = yield(max_elements)
+    @array.each do |element|
+      current_value = yield(element)
+        if current_value > max_value
+          max_element = element
+          max_value = current_value
         end
       end
       max_elements
