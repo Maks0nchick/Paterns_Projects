@@ -1,101 +1,101 @@
-# Класс Student, наследующий от BaseStudent
-class Student < Person
-  attr_reader :last_name, :first_name, :middle_name, :email, :phone, :telegram
 
-  def initialize(id:, github: nil, last_name:, first_name:, middle_name: nil, email: nil, phone: nil, telegram: nil)
-    super(id: id, github: github)
-    self.last_name = last_name
-    self.first_name = first_name
-    self.middle_name = middle_name
-    set_contacts(email: email, phone: phone, telegram: telegram) # Устанавливаем контакты через метод
+require_relative 'person'
+
+class Student<Person
+
+  include Comparable
+  attr_accessor :birthdate
+
+  #конструктор класса
+  def initialize(id:nil,surname:,firstname:,lastname:,phone_number:nil,telegram:nil,email:nil,git:nil,birthdate: nil)
+    super(id: id, git: git,phone_number: phone_number, telegram: telegram, email: email)
+    self.surname = surname
+    self.firstname = firstname 
+    self.lastname = lastname
+    self.birthdate = birthdate
+  end 
+
+  def has_contact_and_git?
+    has_contact? && has_git?
   end
 
-  # Валидаторы для полей
-  def self.valid_name?(name)
-    name.match?(/\A[\u0410-\u044Fa-zA-Z-]+\z/)
+  # Реализация сравнения студентов по дате рождения
+  def <=>(other)
+    if other.is_a?(Student)
+      self.birthdate <=> other.birthdate
+    else
+      raise ArgumentError, "Can't compare #{self.class} with #{other.class}"
+    end
   end
 
-  def self.valid_email?(email)
-    email.nil? || email.match?(/\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i)
-  end
+  #Вывод всех данных о студенте на экран
+  def to_s
+    "\nID: #{@id}\nФИО: #{@surname} #{@firstname} #{@lastname} #{"\nНомер телфона: #{@phone_number}" if @phone_number} #{"\nПочта: #{@email}" if @email} #{"\nТелеграм: #{@telegram}" if @telegram} #{"\nGit: #{@git}" if @git} #{"\nдень рождения: #{@birthdate}"}"
+  end  
 
-  def self.valid_phone?(phone)
-    phone.nil? || phone.match?(/\A\+?\d{10,15}\z/)
-  end
+  #проверка на корректность ФИО
 
-  def self.valid_telegram?(telegram)
-    telegram.nil? || telegram.match?(/\A@[A-Za-z0-9_]+\z/)
+  def self.valid_name?(firstname)
+    firstname.match?(/^[A-Za-zА-Яа-яЁё]+$/)
+  end 
+
+  def self.birthdate?(birthdate)
+    birthdate.match?(/^\d{2}\/\d{2}\/\d{4}$/)
+  end 
+ 
+  def to_h
+    {
+      'id' => self.id,
+      'surname' => self.surname,
+      'firstname' => self.firstname,
+      'lastname' => self.lastname,
+      'birthdate' => self.birthdate,
+      'phone_number' => self.phone_number,
+      'telegram' => self.telegram,
+      'email' => self.email,
+      'git' => self.git
+    }
   end
 
   private
 
-  def phone=(value)
-    raise ArgumentError, "Некорректный номер телефона" unless self.class.valid_phone?(value)
-    @phone = value
-  end
-  
-  def telegram=(value)
-    raise ArgumentError, "Некорректный Telegram" unless self.class.valid_telegram?(value)
-    @telegram = value
-  end
-  
-  def email=(value)
-    raise ArgumentError, "Некорректный email" unless self.class.valid_email?(value)
-    @email = value
-  end
-
-  # Сеттеры с проверкой для ФИО
-  def last_name=(value)
-    raise ArgumentError, "Некорректная фамилия" unless self.class.valid_name?(value)
-
-    @last_name = value
-  end
-
-  def first_name=(value)
-    raise ArgumentError, "Некорректное имя" unless self.class.valid_name?(value)
-
-    @first_name = value
-  end
-
-  def middle_name=(value)
-    raise ArgumentError, "Некорректное отчество" unless value.nil? || self.class.valid_name?(value)
-
-    @middle_name = value
-  end
-
-  public
-
-  def set_contacts(phone: nil, telegram: nil, email: nil)
-    self.phone = phone
-    self.telegram = telegram
-    self.email = email
-  end
-
-  # Проверка наличия контактов
   def has_contact?
-    [@phone, @telegram, @email].any? { |contact| contact && !contact.empty? }
+    @email != nil || @telegram != nil || @phone_number != nil
+  end
+  
+  def has_git?
+    @git != nil
   end
 
-  # Метод для получения скоращение имени
-  def initials
-    middle_initial = @middle_name ? "#{@middle_name[0]}." : ""
-    "#{@last_name} #{@first_name[0]}.#{middle_initial}"
-  end
+    def surname=(surname)
+      if self.class.valid_name?(surname)
+        @surname = surname
+      else 
+        raise ArgumentError, 'Invalid surname'
+      end  
+    end
+      
+    def firstname=(name)
+      if self.class.valid_name?(name) 
+        @name=name
+      else 
+        raise ArgumentError, 'Invalid name'
+      end  
+    end 
 
-  # Метод для нахождения первого контакта
-  def contact
-    [@phone, @telegram, @email].find { |contact| contact && !contact.empty? }
-  end
+    def lastname=(lastname)
+      if self.class.valid_name?(lastname)
+        @lastname=lastname
+      else 
+        raise ArgumentError, 'Invalid patronymic'
+      end  
+    end  
 
-  def to_s
-    "ID: #{@id}, ФИО: #{get_short_name}, GitHub: #{@github || 'не указан'}, Контакты: #{contact_info}"
-  end
-
-  def contact_info
-    contacts = []
-    contacts << "Телефон: #{@phone}" if @phone
-    contacts << "Telegram: #{@telegram}" if @telegram
-    contacts << "Почта: #{@email}" if @email
-    contacts.empty? ? "Нет контактов" : contacts.join(", ")
-  end
+    def birthdate=(birthdate)
+      if self.class.birthdate?(birthdate)
+        @birthdate=birthdate
+      else 
+        raise ArgumentError, 'Invalid birthdate'
+      end  
+    end  
 end

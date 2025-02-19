@@ -1,36 +1,36 @@
-require_relative 'person'
+require_relative './person.rb'
 
 class Student_short < Person
 
-  attr_reader :initials, :contact
-
-  def self.create_about_student(student)
-    new(id: student.id, git: student.git, initials: student.initials, contact: student.contact)
+  attr_reader :fullname, :contact
+  
+  def self.create_from_student(student)
+    new(id: student.id, git: student.git, fullname: student.fullname, contact: student.contact)
   end  
 
-  def self.from_sting(id:,string:)
-    initials, contact, git= read_info_from_string(string)
-    new(id: id, initials:initials, contact:contact, git:git)
+  def self.from_string(id:,string:)
+    fullname, contact, git= read_info_from_string(string)
+    new(id: id, fullname: fullname, contact: contact, git: git)
   end
   
-  def  self.read_info_from_string(string)
-    initials,contact,git = string.split(', ')
-    return initials,contact,git
+  def self.read_info_from_string(string)
+    fullname,contact,git = string.split(', ')
+    return fullname,contact,git
   end  
   
   def to_s
-    "\nID: #{@id} \nInitials: #{@initials} \nGit: #{@git} \nContact: #{@contact}"
+    "\nID: #{@id} \nFullname: #{@fullname} \nGit: #{@git} \nContact: #{@contact}"
   end
- 
-  def has_contact?
-    !@contact.nil?
-  end
+
+  
+  private
+  attr_writer :fullname, :contact
 
   private_class_method :new
 
-    def initialize(id: nil, initials:nil , git: nil, contact: nil)
-      super(id: id, git: git)
-      @initials = initials
-      @contact = contact
-    end 
+  def initialize(id: nil, fullname: nil, git: nil, contact: nil)
+    super(id: id, git: git)
+    self.fullname = fullname
+    self.contact = contact
+  end 
 end  
